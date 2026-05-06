@@ -97,29 +97,45 @@ fun AboutInfoScreen(
             contentPadding = PaddingValues(all = 12.dp)
         ) { scope ->
             animatedItem(scope) { yOffset ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp)
+                        .offset { IntOffset(0, yOffset.roundToPx()) },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Surface(
+                        modifier = Modifier.size(120.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shadowElevation = 8.dp
+                    ) {
+                        Image(
+                            modifier = Modifier.padding(16.dp),
+                            painter = painterResource(R.drawable.img_launcher),
+                            contentDescription = null
+                        )
+                    }
+                    Text(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = InfoDistributor.LAUNCHER_NAME,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        modifier = Modifier.alpha(0.7f),
+                        text = stringResource(R.string.about_launcher_version, BuildConfig.VERSION_NAME),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
+            animatedItem(scope) { yOffset ->
                 ChunkLayout(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    title = stringResource(R.string.about_launcher_title)
+                    title = "FuryMC Community"
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        ButtonIconItem(
-                            icon = painterResource(R.drawable.img_launcher),
-                            title = InfoDistributor.LAUNCHER_NAME,
-                            text = stringResource(R.string.about_launcher_version, BuildConfig.VERSION_NAME),
-                            button = {
-                                Button(
-                                    onClick = checkUpdate
-                                ) {
-                                    Text(text = stringResource(R.string.upgrade_title))
-                                }
-                                Button(
-                                    onClick = { openLink(URL_PROJECT) }
-                                ) {
-                                    Text(text = stringResource(R.string.about_launcher_project_link))
-                                }
-                            }
-                        )
-
                         ButtonIconItem(
                             icon = painterResource(R.drawable.img_launcher),
                             title = stringResource(R.string.about_launcher_author_movtery_title),
@@ -142,7 +158,7 @@ fun AboutInfoScreen(
                         )
 
                         ButtonIconItem(
-                            icon = painterResource(R.drawable.img_launcher), // Use launcher icon as fallback for now
+                            icon = painterResource(R.drawable.img_launcher),
                             title = stringResource(R.string.about_launcher_special_thanks),
                             text = stringResource(R.string.about_launcher_special_thanks_text),
                             button = {
@@ -153,6 +169,13 @@ fun AboutInfoScreen(
                                 }
                             }
                         )
+
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = checkUpdate
+                        ) {
+                            Text(text = "Check for Updates")
+                        }
                     }
                 }
             }
