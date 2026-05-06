@@ -1,0 +1,58 @@
+/*
+ * Zalith Launcher 2
+ * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ */
+
+package fury.mc.launcher.game.download.game.forge
+
+import fury.mc.launcher.coroutine.Task
+import fury.mc.launcher.game.addons.mirror.mapBMCLMirrorUrls
+import fury.mc.launcher.game.addons.modloader.forgelike.ForgeLikeVersion
+import fury.mc.launcher.game.addons.modloader.forgelike.forge.ForgeVersion
+import fury.mc.launcher.game.addons.modloader.forgelike.forge.ForgeVersions
+import fury.mc.launcher.game.addons.modloader.forgelike.neoforge.NeoForgeVersion
+import fury.mc.launcher.game.addons.modloader.forgelike.neoforge.NeoForgeVersions
+import fury.mc.launcher.utils.network.downloadFromMirrorListSuspend
+import java.io.File
+
+const val FORGE_LIKE_DOWNLOAD_ID = "Download.ForgeLike"
+
+fun targetTempForgeLikeInstaller(tempGameDir: File): File = File(tempGameDir, ".temp/forge_like_installer.jar")
+
+/**
+ * 判断是否为 NeoForge 版本
+ */
+val ForgeLikeVersion.isNeoForge: Boolean
+    get() = this is NeoForgeVersion
+
+fun getForgeLikeDownloadTask(
+    targetTempInstaller: File,
+    forgeLikeVersion: ForgeLikeVersion
+): Task {
+    return Task.runTask(
+        id = FORGE_LIKE_DOWNLOAD_ID,
+        task = {
+            //获取安装器下载链接
+            val url = if (forgeLikeVersion.isNeoForge) {
+                NeoForgeVersions.getDownloadUrl(forgeLikeVersion as NeoForgeVersion)
+            } else {
+                ForgeVersions.getDownloadUrl(forgeLikeVersion as ForgeVersion)
+            }
+
+            downloadFromMirrorListSuspend(url.mapBMCLMirrorUrls(), targetTempInstaller)
+        }
+    )
+}

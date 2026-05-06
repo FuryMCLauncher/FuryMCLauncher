@@ -1178,9 +1178,11 @@
     <!-- About -->
     <string name="about_launcher_title">About Launcher</string>
     <string name="about_launcher_version">Launcher Version: %s</string>
-    <string name="about_launcher_author_movtery_title">MovTery</string>
-    <string name="about_launcher_author_movtery_text">Author of %s</string>
-    <string name="about_launcher_project_link">Project Link</string>
+    <string name="about_launcher_author_movtery_title">FuryMC Team</string>
+    <string name="about_launcher_author_movtery_text">A dedicated team bringing you the best offline Minecraft experience on Android.</string>
+    <string name="about_launcher_special_thanks">Special Thanks to Zalith Launcher</string>
+    <string name="about_launcher_special_thanks_text">This project is built upon the exceptional foundation provided by the Zalith Launcher team.</string>
+    <string name="about_launcher_project_link">GitHub Project</string>
     <string name="about_sponsor">Sponsorship Support</string>
     <string name="about_acknowledgements_title">Acknowledgements</string>
     <string name="about_acknowledgements_pojav_text">%s uses the launch backend from PojavLauncher</string>
