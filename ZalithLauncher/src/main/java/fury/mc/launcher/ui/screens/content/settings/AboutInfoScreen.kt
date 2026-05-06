@@ -133,25 +133,41 @@ fun AboutInfoScreen(
             animatedItem(scope) { yOffset ->
                 ChunkLayout(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    title = "FuryMC Community"
+                    title = "Core Vision"
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "FuryMC is an initiative to provide a high-performance, community-driven Minecraft launcher that prioritizes offline play and technical freedom on Android.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                    }
+                }
+            }
+
+            animatedItem(scope) { yOffset ->
+                ChunkLayout(
+                    modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    title = "Development Team"
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         ButtonIconItem(
                             icon = painterResource(R.drawable.img_launcher),
-                            title = stringResource(R.string.about_launcher_author_movtery_title),
-                            text = stringResource(R.string.about_launcher_author_movtery_text),
+                            title = "UnTamed Fury",
+                            text = "Project Lead & Maintainer",
                             button = {
-                                Button(
+                                IconButton(
                                     onClick = { openLink("https://github.com/FuryMCLauncher") }
                                 ) {
                                     Icon(
-                                        modifier = Modifier.size(18.dp),
                                         painter = painterResource(R.drawable.ic_github),
                                         contentDescription = null
-                                    )
-                                    Text(
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        text = "Organization"
                                     )
                                 }
                             }
@@ -159,23 +175,19 @@ fun AboutInfoScreen(
 
                         ButtonIconItem(
                             icon = painterResource(R.drawable.img_launcher),
-                            title = stringResource(R.string.about_launcher_special_thanks),
-                            text = stringResource(R.string.about_launcher_special_thanks_text),
+                            title = "Zalith Launcher Team",
+                            text = "Original Architecture & Foundation",
                             button = {
-                                Button(
+                                IconButton(
                                     onClick = { openLink("https://github.com/ZalithLauncher/ZalithLauncher2") }
                                 ) {
-                                    Text(text = "Original Project")
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_link),
+                                        contentDescription = null
+                                    )
                                 }
                             }
                         )
-
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = checkUpdate
-                        ) {
-                            Text(text = "Check for Updates")
-                        }
                     }
                 }
             }
