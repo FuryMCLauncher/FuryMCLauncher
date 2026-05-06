@@ -1,7 +1,7 @@
 package org.lwjgl.glfw;
 
-import static com.movtery.zalithlauncher.bridge.ZLBridgeStatesKt.CURSOR_DISABLED;
-import static com.movtery.zalithlauncher.bridge.ZLBridgeStatesKt.CURSOR_ENABLED;
+import static fury.mc.launcher.bridge.ZLBridgeStatesKt.CURSOR_DISABLED;
+import static fury.mc.launcher.bridge.ZLBridgeStatesKt.CURSOR_ENABLED;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -12,13 +12,13 @@ import android.view.Choreographer;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
-import com.movtery.zalithlauncher.bridge.CursorShape;
-import com.movtery.zalithlauncher.bridge.NativeLibraryLoader;
-import com.movtery.zalithlauncher.bridge.ZLBridgeStates;
-import com.movtery.zalithlauncher.bridge.ZLNativeInvoker;
-import com.movtery.zalithlauncher.context.ContextsKt;
-import com.movtery.zalithlauncher.game.keycodes.LwjglGlfwKeycode;
-import com.movtery.zalithlauncher.info.InfoDistributor;
+import fury.mc.launcher.bridge.CursorShape;
+import fury.mc.launcher.bridge.NativeLibraryLoader;
+import fury.mc.launcher.bridge.ZLBridgeStates;
+import fury.mc.launcher.bridge.ZLNativeInvoker;
+import fury.mc.launcher.context.ContextsKt;
+import fury.mc.launcher.game.keycodes.LwjglGlfwKeycode;
+import fury.mc.launcher.info.InfoDistributor;
 
 import java.util.function.Consumer;
 

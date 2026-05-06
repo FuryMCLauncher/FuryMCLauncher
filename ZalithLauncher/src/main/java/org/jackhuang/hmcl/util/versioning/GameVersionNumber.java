@@ -17,7 +17,7 @@
  */
 package org.jackhuang.hmcl.util.versioning;
 
-import com.movtery.zalithlauncher.utils.logging.Logger;
+import fury.mc.launcher.utils.logging.Logger;
 
 import org.jackhuang.hmcl.util.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;

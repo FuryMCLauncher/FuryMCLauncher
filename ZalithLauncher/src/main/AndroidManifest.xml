@@ -59,7 +59,7 @@
 
         <activity-alias
             android:label="@string/import_modpack"
-            android:name="com.movtery.activity.ImportModpackActivity"
+            android:name="fury.mc.activity.ImportModpackActivity"
             android:exported="true"
             android:targetActivity=".ui.activities.SplashActivity">
 
@@ -83,7 +83,7 @@
 
         <activity-alias
             android:label="@string/control_manage_import"
-            android:name="com.movtery.activity.ImportControlsActivity"
+            android:name="fury.mc.activity.ImportControlsActivity"
             android:exported="true"
             android:targetActivity=".ui.activities.SplashActivity">
 
