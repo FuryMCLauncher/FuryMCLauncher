@@ -19,7 +19,6 @@
 package fury.mc.launcher.ui.screens.content.settings
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -38,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -52,14 +50,19 @@ import fury.mc.launcher.game.plugin.appCacheIcon
 import fury.mc.launcher.info.InfoDistributor
 import fury.mc.launcher.library.LibraryInfo
 import fury.mc.launcher.library.libraryData
+import fury.mc.launcher.path.URL_COMMUNITY
 import fury.mc.launcher.path.URL_MCMOD
 import fury.mc.launcher.path.URL_PROJECT
 import fury.mc.launcher.path.URL_SUPPORT
+import fury.mc.launcher.path.URL_WEBLATE
 import fury.mc.launcher.ui.base.BaseScreen
 import fury.mc.launcher.ui.components.AnimatedLazyColumn
+import fury.mc.launcher.ui.components.CardTitleLayout
 import fury.mc.launcher.ui.screens.NestedNavKey
 import fury.mc.launcher.ui.screens.NormalNavKey
 import fury.mc.launcher.ui.screens.TitledNavKey
+import fury.mc.launcher.ui.screens.content.settings.layouts.CardPosition
+import fury.mc.launcher.ui.screens.content.settings.layouts.SettingsCard
 import fury.mc.launcher.ui.theme.itemColor
 import fury.mc.launcher.ui.theme.onItemColor
 
@@ -79,30 +82,24 @@ fun AboutInfoScreen(
         AnimatedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             isVisible = isVisible,
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(12.dp)
         ) { scope ->
             
-            // CARD 1: Main App Info & Actions
+            // CUSTOM CARD 1: Main App Info & Actions (Polished for MD3E)
             animatedItem(scope) { yOffset ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(0, yOffset.roundToPx()) },
-                    shape = RoundedCornerShape(32.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shadowElevation = 2.dp
+                SettingsCard(
+                    modifier = Modifier.offset { IntOffset(0, yOffset.roundToPx()) },
+                    position = CardPosition.Single
                 ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        // Top Row
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            // Logo (Red Square)
                             Surface(
                                 modifier = Modifier.size(80.dp),
                                 shape = RoundedCornerShape(16.dp),
-                                color = Color(0xFFE53935) // Red
+                                color = Color(0xFFE53935)
                             ) {
                                 Image(
                                     modifier = Modifier.padding(12.dp),
@@ -111,7 +108,6 @@ fun AboutInfoScreen(
                                 )
                             }
 
-                            // Action Column
                             Column(
                                 modifier = Modifier.weight(1f),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -141,23 +137,20 @@ fun AboutInfoScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Middle (Description)
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         ) {
                             Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = "FuryMC Launcher is based on Zalith Launcher 2, providing a high-performance experience with full offline support and regional independence. Built with the community in mind.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                modifier = Modifier.padding(12.dp),
+                                text = "FuryMC Launcher is a high-performance fork of Zalith Launcher 2, optimized for offline play and unrestricted access.",
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                        // Bottom (Split Pill)
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(50),
@@ -169,21 +162,19 @@ fun AboutInfoScreen(
                                 Text(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(start = 20.dp),
+                                        .padding(start = 16.dp),
                                     text = "Made by UnTamed-Fury",
                                     style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Button(
                                     onClick = { openLink(URL_SUPPORT) },
                                     shape = RoundedCornerShape(50),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary
-                                    ),
-                                    contentPadding = PaddingValues(horizontal = 24.dp)
+                                    )
                                 ) {
-                                    Text("Support the project")
+                                    Text("Support Project")
                                 }
                             }
                         }
@@ -191,50 +182,25 @@ fun AboutInfoScreen(
                 }
             }
 
-            // CARD 2: Credits & Original Project
+            // CARD 2: Credits & Original Project (Standard MD3E Layout)
             animatedItem(scope) { yOffset ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(0, yOffset.roundToPx()) },
-                    shape = RoundedCornerShape(32.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shadowElevation = 1.dp
+                ChunkLayout(
+                    modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    title = "Original Project"
                 ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        // Top Area (Grey/Variant rounded)
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Surface(
-                                    modifier = Modifier.size(50.dp),
-                                    shape = CircleShape,
-                                    color = Color(0xFF4CAF50) // Green
-                                ) {
-                                    Image(
-                                        modifier = Modifier.padding(8.dp),
-                                        painter = painterResource(R.drawable.img_launcher), // Fallback to launcher icon
-                                        contentDescription = null
-                                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ButtonIconItem(
+                            icon = painterResource(R.drawable.img_zalith_launcher), // Restored Zalith Logo
+                            title = "Zalith Launcher Team",
+                            text = "Original Project Author: Movtery",
+                            button = {
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    IconButton(onClick = { openLink("https://github.com/ZalithLauncher/ZalithLauncher2") }) {
+                                        Icon(painterResource(R.drawable.ic_link), contentDescription = null)
+                                    }
                                 }
-                                Text(
-                                    text = "The original Project created by Zalith launcher team. Author : Movtery",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium
-                                )
                             }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Bottom Area (3 Buttons)
+                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -242,13 +208,7 @@ fun AboutInfoScreen(
                             PillButton(
                                 modifier = Modifier.weight(1f),
                                 text = "Website",
-                                onClick = { openLink("https://github.com/ZalithLauncher/ZalithLauncher2") },
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                            PillButton(
-                                modifier = Modifier.weight(1f),
-                                text = "Repository",
-                                onClick = { openLink("https://github.com/ZalithLauncher/ZalithLauncher2") },
+                                onClick = { openLink("https://zalith.movtery.com") },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                             PillButton(
@@ -262,60 +222,405 @@ fun AboutInfoScreen(
                 }
             }
 
-            // CARD 3: Projects Used
+            // RESTORED: Acknowledgements Section
             animatedItem(scope) { yOffset ->
-                InformationCard(
-                    modifier = Modifier.offset { IntOffset(0, yOffset.roundToPx()) },
-                    title = "THE PROJECTS THAT BEEN USED TO CREATE THIS APP.",
-                    content = {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            // Example items
-                            ProjectItem("PojavLauncher", "Core engine", openLink = { openLink("https://github.com/PojavLauncherTeam/PojavLauncher") })
-                            ProjectItem("HMCL", "Architecture inspiration", openLink = { openLink("https://github.com/HMCL-dev/HMCL") })
-                            ProjectItem("PCL2", "Implementation reference", openLink = { openLink("https://github.com/Meloong-Git/PCL") })
-                        }
-                    }
-                )
-            }
-
-            // CARD 4: Libraries Used
-            animatedItem(scope) { yOffset ->
-                InformationCard(
-                    modifier = Modifier.offset { IntOffset(0, yOffset.roundToPx()) },
-                    title = "THE LIBRARIES USED TO CREATE THIS PROJECT.",
-                    content = {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            libraryData.take(5).forEach { info ->
-                                LibraryMiniItem(info = info, openLink = openLink)
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp)
-                                    .alpha(0.5f),
-                                text = "And many more open-source libraries...",
-                                style = MaterialTheme.typography.labelSmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                )
-            }
-
-            // CARD 5: Renderers (if any)
-            PluginLoader.allPlugins.takeIf { it.isNotEmpty() }?.let { allPlugins ->
-                animatedItem(scope) { yOffset ->
-                    InformationCard(
-                        modifier = Modifier.offset { IntOffset(0, yOffset.roundToPx()) },
-                        title = "The extra renderers that shows that u have installed.",
-                        content = {
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                allPlugins.forEach { apkPlugin ->
-                                    PluginMiniItem(apkPlugin = apkPlugin)
+                ChunkLayout(
+                    modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    title = stringResource(R.string.about_acknowledgements_title)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ButtonIconItem(
+                            icon = painterResource(R.drawable.img_bangbang93),
+                            title = "bangbang93",
+                            text = stringResource(R.string.about_acknowledgements_bangbang93_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            button = {
+                                Button(onClick = { openLink("https://afdian.com/a/bangbang93") }) {
+                                    Text(text = stringResource(R.string.about_sponsor))
                                 }
                             }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_launcher_fcl),
+                            title = "Fold Craft Launcher",
+                            text = stringResource(R.string.about_acknowledgements_fcl_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            openLicense = { openLicense(R.raw.fcl_license) },
+                            openLink = { openLink("https://github.com/FCL-Team/FoldCraftLauncher") }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_launcher_hmcl),
+                            title = "Hello Minecraft! Launcher",
+                            text = stringResource(R.string.about_acknowledgements_hmcl_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            openLicense = { openLicense(R.raw.hmcl_license) },
+                            openLink = { openLink("https://github.com/HMCL-dev/HMCL") }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_platform_mcmod),
+                            title = stringResource(R.string.about_acknowledgements_mcmod),
+                            text = stringResource(R.string.about_acknowledgements_mcmod_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            openLink = { openLink(URL_MCMOD) }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_launcher_pcl2),
+                            title = "Plain Craft Launcher 2",
+                            text = stringResource(R.string.about_acknowledgements_pcl_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            openLink = { openLink("https://github.com/Meloong-Git/PCL") }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_launcher_pojav),
+                            title = "PojavLauncher",
+                            text = stringResource(R.string.about_acknowledgements_pojav_text, InfoDistributor.LAUNCHER_SHORT_NAME),
+                            openLicense = { openLicense(R.raw.lgpl_3_license) },
+                            openLink = { openLink("https://github.com/PojavLauncherTeam/PojavLauncher") }
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.ic_github),
+                            title = stringResource(R.string.about_acknowledgements_github_community),
+                            text = stringResource(R.string.about_acknowledgements_github_community_text),
+                            openLink = { openLink(URL_COMMUNITY) },
+                            useImage = false
+                        )
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.img_weblate),
+                            title = stringResource(R.string.about_acknowledgements_weblate_community),
+                            text = stringResource(R.string.about_acknowledgements_weblate_community_text),
+                            openLink = { openLink(URL_WEBLATE) }
+                        )
+                    }
+                }
+            }
+
+            // RESTORED: Library Section
+            animatedItem(scope) { yOffset ->
+                ChunkLayout(
+                    modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    title = stringResource(R.string.about_library_title)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        libraryData.forEach { info ->
+                            LibraryInfoItem(info = info, openLicense = openLicense, openLink = openLink)
                         }
+                    }
+                }
+            }
+
+            // RESTORED: Plugin Section
+            PluginLoader.allPlugins.takeIf { it.isNotEmpty() }?.let { allPlugins ->
+                animatedItem(scope) { yOffset ->
+                    ChunkLayout(
+                        modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                        title = stringResource(R.string.about_plugin_title)
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            allPlugins.forEach { apkPlugin ->
+                                PluginInfoItem(apkPlugin = apkPlugin)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChunkLayout(
+    modifier: Modifier = Modifier,
+    title: String,
+    content: @Composable () -> Unit
+) {
+    SettingsCard(
+        modifier = modifier,
+        position = CardPosition.Single
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            CardTitleLayout {
+                Text(
+                    modifier = Modifier.padding(all = 16.dp),
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 12.dp)
+            ) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+private fun LinkIconItem(
+    modifier: Modifier = Modifier,
+    icon: Painter,
+    title: String,
+    text: String,
+    openLicense: (() -> Unit)? = null,
+    openLink: (() -> Unit)? = null,
+    color: Color = itemColor(),
+    contentColor: Color = onItemColor(),
+    useImage: Boolean = true
+) {
+    Surface(
+        modifier = modifier,
+        color = color,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.large,
+        onClick = {}
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val iconModifier = Modifier
+                .size(34.dp)
+                .clip(shape = RoundedCornerShape(6.dp))
+            if (useImage) {
+                Image(
+                    modifier = iconModifier,
+                    painter = icon,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Icon(
+                    modifier = iconModifier,
+                    painter = icon,
+                    contentDescription = null
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    modifier = Modifier.alpha(0.7f),
+                    text = text,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row {
+                openLicense?.let {
+                    IconButton(
+                        onClick = it
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(22.dp),
+                            painter = painterResource(R.drawable.ic_copyright_outlined),
+                            contentDescription = "License"
+                        )
+                    }
+                }
+                openLink?.let {
+                    IconButton(
+                        onClick = it
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_link),
+                            contentDescription = stringResource(R.string.generic_open_link)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ButtonIconItem(
+    modifier: Modifier = Modifier,
+    icon: Painter,
+    title: String,
+    text: String,
+    button: @Composable RowScope.() -> Unit,
+    color: Color = itemColor(),
+    contentColor: Color = onItemColor(),
+) {
+    Surface(
+        modifier = modifier,
+        color = color,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.large,
+        onClick = {}
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(shape = RoundedCornerShape(6.dp)),
+                painter = icon,
+                contentDescription = null,
+                contentScale = ContentScale.Fit
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    modifier = Modifier.alpha(0.7f),
+                    text = text,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            button()
+        }
+    }
+}
+
+@Composable
+private fun LibraryInfoItem(
+    info: LibraryInfo,
+    modifier: Modifier = Modifier,
+    color: Color = itemColor(),
+    contentColor: Color = onItemColor(),
+    openLicense: (Int) -> Unit,
+    openLink: (url: String) -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        color = color,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.large,
+        onClick = {}
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = info.name,
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Column(
+                    modifier = Modifier.alpha(0.7f)
+                ) {
+                    info.copyrightInfo?.let { copyrightInfo ->
+                        Text(
+                            text = copyrightInfo,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Text(
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                openLicense(info.license.raw)
+                            }
+                        ),
+                        text = "Licensed under the ${info.license.name}",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            textDecoration = TextDecoration.Underline
+                        )
                     )
+                }
+            }
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = {
+                    openLink(info.webUrl)
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_link),
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PluginInfoItem(
+    apkPlugin: ApkPlugin,
+    modifier: Modifier = Modifier,
+    color: Color = itemColor(),
+    contentColor: Color = onItemColor(),
+) {
+    Surface(
+        modifier = modifier,
+        color = color,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.large,
+        onClick = {}
+    ) {
+        val context = LocalContext.current
+        Row(
+            modifier = Modifier
+                .padding(all = 12.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            val iconFile = appCacheIcon(apkPlugin.packageName)
+            if (iconFile.exists()) {
+                val model = remember(context, iconFile) {
+                    ImageRequest.Builder(context)
+                        .data(iconFile)
+                        .build()
+                }
+                AsyncImage(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(shape = RoundedCornerShape(8.dp)),
+                    model = model,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Image(
+                    modifier = Modifier.size(34.dp),
+                    painter = painterResource(R.drawable.ic_unknown_icon),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = apkPlugin.appName,
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Row(
+                    modifier = Modifier.alpha(0.7f),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = apkPlugin.packageName,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    if (apkPlugin.appVersion.isNotEmpty()) {
+                        Text(
+                            text = apkPlugin.appVersion,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
         }
@@ -343,86 +648,5 @@ private fun PillButton(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
-    }
-}
-
-@Composable
-private fun InformationCard(
-    title: String,
-    content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
-        border = CardDefaults.outlinedCardBorder()
-    ) {
-        Column(modifier = Modifier.padding(24.dp)) {
-            Text(
-                modifier = Modifier.padding(bottom = 16.dp),
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            content()
-        }
-    }
-}
-
-@Composable
-private fun ProjectItem(name: String, desc: String, openLink: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = openLink)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Icon(painterResource(R.drawable.ic_link), contentDescription = null, modifier = Modifier.size(18.dp))
-        Column {
-            Text(name, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-            Text(desc, style = MaterialTheme.typography.labelSmall, modifier = Modifier.alpha(0.7f))
-        }
-    }
-}
-
-@Composable
-private fun LibraryMiniItem(info: LibraryInfo, openLink: (url: String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { openLink(info.webUrl) },
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(info.name, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
-        Icon(painterResource(R.drawable.ic_link), contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
-    }
-}
-
-@Composable
-private fun PluginMiniItem(apkPlugin: ApkPlugin) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Surface(modifier = Modifier.size(24.dp), shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-            val context = LocalContext.current
-            val iconFile = appCacheIcon(apkPlugin.packageName)
-            if (iconFile.exists()) {
-                val model = remember(context, iconFile) {
-                    ImageRequest.Builder(context).data(iconFile).build()
-                }
-                AsyncImage(model = model, contentDescription = null)
-            } else {
-                Icon(painterResource(R.drawable.ic_unknown_icon), contentDescription = null, modifier = Modifier.padding(4.dp))
-            }
-        }
-        Text(apkPlugin.appName, style = MaterialTheme.typography.bodySmall)
     }
 }
