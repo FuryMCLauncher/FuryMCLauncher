@@ -191,8 +191,6 @@ fun AboutInfoScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
             // CARD 2: Credits & Original Project
             animatedItem(scope) { yOffset ->
                 Surface(
@@ -264,8 +262,6 @@ fun AboutInfoScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
             // CARD 3: Projects Used
             animatedItem(scope) { yOffset ->
                 InformationCard(
@@ -281,8 +277,6 @@ fun AboutInfoScreen(
                     }
                 )
             }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
 
             // CARD 4: Libraries Used
             animatedItem(scope) { yOffset ->
@@ -310,7 +304,6 @@ fun AboutInfoScreen(
 
             // CARD 5: Renderers (if any)
             PluginLoader.allPlugins.takeIf { it.isNotEmpty() }?.let { allPlugins ->
-                item { Spacer(modifier = Modifier.height(16.dp)) }
                 animatedItem(scope) { yOffset ->
                     InformationCard(
                         modifier = Modifier.offset { IntOffset(0, yOffset.roundToPx()) },
