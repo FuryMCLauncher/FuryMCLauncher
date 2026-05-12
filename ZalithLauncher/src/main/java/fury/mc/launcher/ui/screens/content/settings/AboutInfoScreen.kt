@@ -127,8 +127,8 @@ fun AboutInfoScreen(
                                     )
                                     PillButton(
                                         modifier = Modifier.weight(1f),
-                                        text = "Wiki",
-                                        onClick = { openLink("https://github.com/FuryMCLauncher/FuryMCLauncher/wiki") },
+                                        text = "Discord",
+                                        onClick = { openLink("https://discord.gg/dwYVAbuhyW") },
                                         containerColor = MaterialTheme.colorScheme.secondaryContainer
                                     )
                                 }
@@ -168,7 +168,7 @@ fun AboutInfoScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Button(
-                                    onClick = { openLink(URL_SUPPORT) },
+                                    onClick = { openLink("https://buymeacoffee.com/untamedfury") },
                                     shape = RoundedCornerShape(50),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary
@@ -208,7 +208,7 @@ fun AboutInfoScreen(
                             PillButton(
                                 modifier = Modifier.weight(1f),
                                 text = "Website",
-                                onClick = { openLink("https://zalith.movtery.com") },
+                                onClick = { openLink("https://zalithlauncher.cn") },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                             PillButton(
