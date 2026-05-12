@@ -70,6 +70,7 @@ import fury.mc.launcher.game.input.CharacterSenderStrategy
 import fury.mc.launcher.game.input.LWJGLCharSender
 import fury.mc.launcher.game.keycodes.LwjglGlfwKeycode
 import fury.mc.launcher.game.launch.GameLauncher
+import fury.mc.launcher.game.launch.GameService
 import fury.mc.launcher.game.launch.JvmLaunchInfo
 import fury.mc.launcher.game.launch.JvmLauncher
 import fury.mc.launcher.game.launch.Launcher
@@ -79,8 +80,8 @@ import fury.mc.launcher.game.launch.handler.HandlerType
 import fury.mc.launcher.game.launch.handler.JVMHandler
 import fury.mc.launcher.game.multirt.RuntimesManager
 import fury.mc.launcher.game.version.installed.Version
-import fury.mc.launcher.path.PathManager
 import fury.mc.launcher.setting.AllSettings
+import fury.mc.launcher.terracotta.TerracottaVPNService
 import fury.mc.launcher.ui.base.BaseAppCompatActivity
 import fury.mc.launcher.ui.base.applyFullscreen
 import fury.mc.launcher.ui.components.rememberBoxSize
@@ -334,6 +335,9 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
         //初始化物理鼠标连接检查器
         PhysicalMouseChecker.initChecker(this)
 
+        //启动前台服务，防止后台网络中断
+        startForegroundService(Intent(this, GameService::class.java))
+
         val bundle = intent.extras ?: throw IllegalStateException("Unknown VM launch state!")
 
         vmViewModel.initSession(
@@ -343,8 +347,12 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
             eventViewModel = eventViewModel,
             gamepadViewModel = gamepadViewModel,
             exitListener = { exitCode: Int, isSignal: Boolean ->
+                stopAllService()
                 if (exitCode != 0) {
-                    showExitMessage(this, exitCode, isSignal)
+                    val logPath = withLauncher {
+                        getLogFile().absolutePath
+                    }
+                    showExitMessage(this@VMActivity, exitCode, isSignal, logPath)
                 } else {
                     //重启启动器
                     ProcessPhoenix.triggerRebirth(this@VMActivity)
@@ -365,7 +373,7 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) // 防止系统息屏
         }
 
-        val logFile = File(PathManager.DIR_FILES_EXTERNAL, "${withLauncher { getLogName() } }.log")
+        val logFile = withLauncher { getLogFile() }
         if (!logFile.exists() && !logFile.createNewFile()) throw IOException("Failed to create a new log file")
         LoggerBridge.start(logFile.absolutePath)
 
@@ -534,8 +542,19 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
     }
 
     override fun onDestroy() {
+        stopAllService()
         withHandler { onDestroy() }
         super.onDestroy()
+    }
+
+    private fun stopAllService() {
+        stopService(Intent(this, GameService::class.java))
+        if (TerracottaVPNService.isRunning()) {
+            val vpnIntent = Intent(this, TerracottaVPNService::class.java).apply {
+                action = TerracottaVPNService.ACTION_STOP
+            }
+            startForegroundService(vpnIntent)
+        }
     }
 
     @SuppressLint("RestrictedApi")

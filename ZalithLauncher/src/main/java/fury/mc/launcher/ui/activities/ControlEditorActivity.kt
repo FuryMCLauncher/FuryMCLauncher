@@ -28,8 +28,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import fury.mc.layer_controller.layout.ControlLayout
-import fury.mc.layer_controller.layout.loadLayoutFromFile
+import com.movtery.layer_controller.layout.ControlLayout
+import com.movtery.layer_controller.layout.loadLayoutFromFile
 import fury.mc.launcher.setting.AllSettings
 import fury.mc.launcher.ui.base.BaseAppCompatActivity
 import fury.mc.launcher.ui.base.applyFullscreen

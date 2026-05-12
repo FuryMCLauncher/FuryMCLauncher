@@ -30,7 +30,6 @@ import fury.mc.launcher.bridge.ZLBridge
 import fury.mc.launcher.bridge.ZLNativeInvoker
 import fury.mc.launcher.game.multirt.Runtime
 import fury.mc.launcher.game.multirt.RuntimesManager
-import fury.mc.launcher.game.path.GamePathManager
 import fury.mc.launcher.game.path.getGameHome
 import fury.mc.launcher.game.plugin.ffmpeg.FFmpegPluginManager
 import fury.mc.launcher.game.plugin.natives.NativePluginManager
@@ -68,13 +67,13 @@ abstract class Launcher(
 
     abstract suspend fun launch(screenSize: IntSize): Int
     abstract fun chdir(): String
-    abstract fun getLogName(): String
+    abstract fun getLogFile(): File
     abstract fun exit()
 
     protected suspend fun launchJvm(
         context: Context,
         jvmArgs: List<String>,
-        userHome: String? = null,
+        userHome: String,
         userArgs: String,
         screenSize: IntSize,
         useLocalLanguage: Boolean = true
@@ -105,7 +104,7 @@ abstract class Launcher(
     private suspend fun launchJavaVM(
         context: Context,
         jvmArgs: List<String>,
-        userHome: String?,
+        userHome: String,
         userArgs: String,
         screenSize: IntSize,
         useLocalLanguage: Boolean
@@ -149,7 +148,7 @@ abstract class Launcher(
     protected open fun MutableMap<String, String>.putJavaArgs() {}
 
     private fun getJavaArgs(
-        userHome: String? = null,
+        userHome: String,
         userArgumentsString: String,
         screenSize: IntSize,
         useLocalLanguage: Boolean
@@ -161,7 +160,7 @@ abstract class Launcher(
             put("java.home", getJavaHome())
             put("java.io.tmpdir", PathManager.DIR_CACHE.absolutePath)
             put("jna.boot.library.path", PathManager.DIR_NATIVE_LIB)
-            put("user.home", userHome ?: GamePathManager.getUserHome())
+            put("user.home", userHome)
             if (useLocalLanguage) {
                 put("user.language", System.getProperty("user.language") ?: "en")
                 put("user.country", Locale.getDefault().country)

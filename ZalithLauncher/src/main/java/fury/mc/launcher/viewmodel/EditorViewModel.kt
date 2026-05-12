@@ -26,17 +26,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import fury.mc.layer_controller.data.HideLayerWhen
-import fury.mc.layer_controller.layout.ControlLayout
-import fury.mc.layer_controller.observable.ObservableButtonStyle
-import fury.mc.layer_controller.observable.ObservableControlLayer
-import fury.mc.layer_controller.observable.ObservableControlLayout
-import fury.mc.layer_controller.observable.ObservableNormalData
-import fury.mc.layer_controller.observable.ObservableTextData
-import fury.mc.layer_controller.observable.ObservableWidget
-import fury.mc.layer_controller.observable.cloneNormal
-import fury.mc.layer_controller.observable.cloneText
-import fury.mc.layer_controller.utils.saveToFile
+import com.movtery.layer_controller.data.HideLayerWhen
+import com.movtery.layer_controller.layout.ControlLayout
+import com.movtery.layer_controller.observable.ObservableButtonStyle
+import com.movtery.layer_controller.observable.ObservableControlLayer
+import com.movtery.layer_controller.observable.ObservableControlLayout
+import com.movtery.layer_controller.observable.ObservableNormalData
+import com.movtery.layer_controller.observable.ObservableTextData
+import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.layer_controller.observable.cloneNormal
+import com.movtery.layer_controller.observable.cloneText
+import com.movtery.layer_controller.utils.saveToFile
 import fury.mc.launcher.R
 import fury.mc.launcher.ui.components.MenuState
 import fury.mc.launcher.ui.screens.main.control_editor.EditorOperation
@@ -195,7 +195,7 @@ class EditorViewModel() : ViewModel() {
      */
     fun createNewStyle(name: String) {
         observableLayout.addStyle(
-            fury.mc.layer_controller.data.createNewButtonStyle(name)
+            com.movtery.layer_controller.data.createNewButtonStyle(name)
         )
     }
 

@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import fury.mc.launcher.game.launch.LaunchGame
 import fury.mc.launcher.game.version.installed.Version
+import fury.mc.launcher.game.version.installed.VersionsManager
 import fury.mc.launcher.ui.screens.content.elements.LaunchGameOperation
 import fury.mc.launcher.ui.screens.content.elements.QuickPlay
 
@@ -37,9 +38,8 @@ class LaunchGameViewModel : ViewModel() {
     /**
      * 尝试启动游戏
      */
-    fun tryLaunch(
-        version: Version?
-    ) {
+    fun tryLaunch() {
+        val version = VersionsManager.currentVersion.value
         if (launchGameOperation == LaunchGameOperation.None) {
             launchGameOperation = LaunchGameOperation.TryLaunch(version)
         }

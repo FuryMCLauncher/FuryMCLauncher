@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import com.jakewharton.processphoenix.ProcessPhoenix
 import fury.mc.launcher.R
 import fury.mc.launcher.context.COPY_LABEL_LINK
-import fury.mc.launcher.game.launch.LogName
 import fury.mc.launcher.path.PathManager
 import fury.mc.launcher.ui.base.BaseAppCompatActivity
 import fury.mc.launcher.ui.screens.main.ErrorScreen
@@ -46,7 +45,7 @@ import fury.mc.launcher.utils.getParcelableSafely
 import fury.mc.launcher.utils.getSerializableSafely
 import fury.mc.launcher.utils.network.openLink
 import fury.mc.launcher.utils.string.throwableToString
-import fury.mc.launcher.viewmodel.CrashLogsUploadViewModel
+import fury.mc.launcher.viewmodel.LogsUploadViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import java.io.File
@@ -58,18 +57,27 @@ private const val BUNDLE_CAN_RESTART = "BUNDLE_CAN_RESTART"
 private const val EXIT_JVM = "EXIT_JVM"
 private const val EXIT_LAUNCHER = "EXIT_LAUNCHER"
 
-fun showExitMessage(context: Context, code: Int, isSignal: Boolean) {
+fun showExitMessage(
+    context: Context,
+    code: Int,
+    isSignal: Boolean,
+    logPath: String
+) {
     val intent = Intent(context, ErrorActivity::class.java).apply {
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         putExtra(BUNDLE_EXIT_TYPE, EXIT_JVM)
-        putExtra(BUNDLE_JVM_CRASH, JvmCrash(code, isSignal))
+        putExtra(BUNDLE_JVM_CRASH, JvmCrash(code, isSignal, logPath))
     }
     context.startActivity(intent)
 }
 
 @Parcelize
-private data class JvmCrash(val code: Int, val isSignal: Boolean): Parcelable
+private data class JvmCrash(
+    val code: Int,
+    val isSignal: Boolean,
+    val logPath: String
+): Parcelable
 
 @AndroidEntryPoint
 class ErrorActivity : BaseAppCompatActivity(refreshData = false) {
@@ -77,7 +85,7 @@ class ErrorActivity : BaseAppCompatActivity(refreshData = false) {
     /**
      * 游戏崩溃日志上传逻辑管理 ViewModel
      */
-    private val viewModel: CrashLogsUploadViewModel by viewModels()
+    private val viewModel: LogsUploadViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +103,11 @@ class ErrorActivity : BaseAppCompatActivity(refreshData = false) {
                 ErrorMessage(
                     message = message,
                     messageBody = messageBody,
-                    crashType = CrashType.GAME_CRASH
+                    crashType = CrashType.GAME_CRASH,
+                    logFile = File(jvmCrash.logPath).also { file ->
+                        //检查日志文件是否适合上传
+                        viewModel.check(file)
+                    }
                 )
             }
             else -> {
@@ -105,23 +117,13 @@ class ErrorActivity : BaseAppCompatActivity(refreshData = false) {
                 ErrorMessage(
                     message = message,
                     messageBody = messageBody,
-                    crashType = CrashType.LAUNCHER_CRASH
+                    crashType = CrashType.LAUNCHER_CRASH,
+                    logFile = PathManager.FILE_CRASH_REPORT
                 )
             }
         }
 
-        val logFile = when (exitType) {
-            EXIT_JVM -> {
-                File(PathManager.DIR_FILES_EXTERNAL, "${LogName.GAME.fileName}.log").also { file ->
-                    //检查日志文件是否适合上传
-                    viewModel.check(file)
-                }
-            }
-            else -> {
-                PathManager.FILE_CRASH_REPORT
-            }
-        }
-
+        val logFile = errorMessage.logFile
         val canRestart: Boolean = extras.getBoolean(BUNDLE_CAN_RESTART, true)
 
         setContent {
@@ -179,7 +181,8 @@ class ErrorActivity : BaseAppCompatActivity(refreshData = false) {
     private data class ErrorMessage(
         val message: String,
         val messageBody: String,
-        val crashType: CrashType
+        val crashType: CrashType,
+        val logFile: File
     )
 }
 

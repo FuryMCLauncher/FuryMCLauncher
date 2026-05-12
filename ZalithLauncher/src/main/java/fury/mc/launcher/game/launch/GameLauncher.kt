@@ -37,16 +37,19 @@ import fury.mc.launcher.game.addons.modloader.ModLoader
 import fury.mc.launcher.game.download.game.parseLibraryComponents
 import fury.mc.launcher.game.multirt.Runtime
 import fury.mc.launcher.game.multirt.RuntimesManager
+import fury.mc.launcher.game.path.GamePathManager
 import fury.mc.launcher.game.plugin.driver.DriverPluginManager
 import fury.mc.launcher.game.plugin.renderer.RendererPluginManager
 import fury.mc.launcher.game.renderer.Renderers
 import fury.mc.launcher.game.support.touch_controller.ControllerProxy
 import fury.mc.launcher.game.version.installed.Version
+import fury.mc.launcher.game.version.installed.VersionsManager
 import fury.mc.launcher.game.version.installed.getGameManifest
 import fury.mc.launcher.game.versioninfo.models.GameManifest
 import fury.mc.launcher.path.LibPath
 import fury.mc.launcher.path.PathManager
 import fury.mc.launcher.setting.AllSettings
+import fury.mc.launcher.utils.GSON
 import fury.mc.launcher.utils.device.Architecture
 import fury.mc.launcher.utils.file.child
 import fury.mc.launcher.utils.file.ensureDirectorySilently
@@ -80,7 +83,13 @@ class GameLauncher(
             Renderers.setCurrentRenderer(activity, version.getRenderer())
         }
 
-        gameManifest = getGameManifest(version)
+        val manifest = GSON.fromJson(File(version.getVersionPath(), "${version.getVersionName()}.json").readText(), GameManifest::class.java)
+        val clientJar = manifest.inheritsFrom?.let { inheritsFrom ->
+            //FIXME: 依赖的是一个原版ID的版本，但这个版本可能是用户自行安装的，只是版本名称与ID一致，不保证客户端真的是对应版本
+            VersionsManager.getVersion(inheritsFrom)?.getClientJar()
+        } ?: version.getClientJar()
+
+        gameManifest = getGameManifest(version, gameManifest = manifest)
         CallbackBridge.nativeSetUseInputStackQueue(gameManifest.arguments != null)
 
         val currentAccount = AccountsManager.currentAccountFlow.value!!
@@ -104,6 +113,7 @@ class GameLauncher(
         return launchGame(
             screenSize = screenSize,
             account = account,
+            clientJar = clientJar,
             javaRuntime = javaRuntime,
             customArgs = customArgs
         )
@@ -137,7 +147,7 @@ class GameLauncher(
         return version.getGameDir().absolutePath
     }
 
-    override fun getLogName(): String = LogName.GAME.fileName
+    override fun getLogFile(): File = VersionsManager.getLatestLog(version)
 
     override fun initEnv(screenSize: IntSize): MutableMap<String, String> {
         val envMap = super.initEnv(screenSize)
@@ -181,6 +191,7 @@ class GameLauncher(
     private suspend fun launchGame(
         screenSize: IntSize,
         account: Account,
+        clientJar: File,
         javaRuntime: String,
         customArgs: String
     ): Int {
@@ -200,6 +211,7 @@ class GameLauncher(
             offlineServer = offlineServer,
             gameDirPath = gameDirPath,
             version = version,
+            clientJar = clientJar,
             gameManifest = gameManifest,
             runtime = runtime,
             readAssetsFile = { path -> activity.readAssetFile(path) },
@@ -213,6 +225,7 @@ class GameLauncher(
         return launchJvm(
             context = activity,
             jvmArgs = launchArgs,
+            userHome = GamePathManager.getCurrentPath(),
             userArgs = customArgs,
             screenSize = screenSize
         )

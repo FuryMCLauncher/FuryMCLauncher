@@ -21,7 +21,6 @@ package fury.mc.launcher.ui.screens.main
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -56,6 +55,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,8 +89,10 @@ import fury.mc.launcher.ui.screens.TitledNavKey
 import fury.mc.launcher.ui.screens.content.AccountManageScreen
 import fury.mc.launcher.ui.screens.content.DownloadScreen
 import fury.mc.launcher.ui.screens.content.FileSelectorScreen
+import fury.mc.launcher.ui.screens.content.HomePageEditorScreen
 import fury.mc.launcher.ui.screens.content.LauncherScreen
 import fury.mc.launcher.ui.screens.content.LicenseScreen
+import fury.mc.launcher.ui.screens.content.LogViewScreen
 import fury.mc.launcher.ui.screens.content.MultiplayerScreen
 import fury.mc.launcher.ui.screens.content.SettingsScreen
 import fury.mc.launcher.ui.screens.content.VersionExportScreen
@@ -108,9 +110,9 @@ import fury.mc.launcher.ui.theme.onBackgroundColor
 import fury.mc.launcher.ui.theme.onCardColor
 import fury.mc.launcher.utils.animation.getAnimateTween
 import fury.mc.launcher.utils.festival.LocalFestivals
+import fury.mc.launcher.utils.file.formatFileSize
 import fury.mc.launcher.viewmodel.ErrorViewModel
 import fury.mc.launcher.viewmodel.EventViewModel
-import fury.mc.launcher.viewmodel.LaunchGameViewModel
 import fury.mc.launcher.viewmodel.LocalBackgroundViewModel
 import fury.mc.launcher.viewmodel.ModpackImportViewModel
 import fury.mc.launcher.viewmodel.ScreenBackStackViewModel
@@ -119,7 +121,6 @@ import fury.mc.launcher.viewmodel.sendKeepScreen
 @Composable
 fun MainScreen(
     screenBackStackModel: ScreenBackStackViewModel,
-    launchGameViewModel: LaunchGameViewModel,
     eventViewModel: EventViewModel,
     modpackImportViewModel: ModpackImportViewModel,
     submitError: (ErrorViewModel.ThrowableMessage) -> Unit
@@ -208,7 +209,6 @@ fun MainScreen(
                     modifier = Modifier.fillMaxSize(),
                     screenBackStackModel = screenBackStackModel,
                     toMainScreen = toMainScreen,
-                    launchGameViewModel = launchGameViewModel,
                     eventViewModel = eventViewModel,
                     modpackImportViewModel = modpackImportViewModel,
                     submitError = submitError
@@ -459,7 +459,6 @@ private fun NavigationUI(
     modifier: Modifier = Modifier,
     screenBackStackModel: ScreenBackStackViewModel,
     toMainScreen: () -> Unit,
-    launchGameViewModel: LaunchGameViewModel,
     eventViewModel: EventViewModel,
     modpackImportViewModel: ModpackImportViewModel,
     submitError: (ErrorViewModel.ThrowableMessage) -> Unit
@@ -501,7 +500,17 @@ private fun NavigationUI(
                     LauncherScreen(
                         backStackViewModel = screenBackStackModel,
                         navigateToVersions = navigateToVersions,
-                        launchGameViewModel = launchGameViewModel
+                        onLaunchGame = {
+                            eventViewModel.sendEvent(
+                                EventViewModel.Event.Launch.Main
+                            )
+                        },
+                        onOpenLink = {
+                            eventViewModel.sendEvent(EventViewModel.Event.OpenLink(it))
+                        },
+                        onHomePageEvent = { event ->
+                            eventViewModel.sendEvent(EventViewModel.Event.HomePage.Event(event))
+                        }
                     )
                 }
                 entry<NestedNavKey.Settings> { key ->
@@ -564,7 +573,6 @@ private fun NavigationUI(
                         onExportModpack = {
                             navigateToExport(key.version)
                         },
-                        launchGameViewModel = launchGameViewModel,
                         eventViewModel = eventViewModel,
                         submitError = submitError
                     )
@@ -590,6 +598,17 @@ private fun NavigationUI(
                     MultiplayerScreen(
                         backScreenViewModel = screenBackStackModel,
                         eventViewModel = eventViewModel
+                    )
+                }
+                entry<NormalNavKey.HomePageEditor> {
+                    HomePageEditorScreen(
+                        backStackViewModel = screenBackStackModel,
+                    )
+                }
+                entry<NormalNavKey.LogView> { key ->
+                    LogViewScreen(
+                        key = key,
+                        backStackViewModel = screenBackStackModel,
                     )
                 }
             }
@@ -672,6 +691,7 @@ private fun TaskMenu(
                             taskProgress = task.currentProgress,
                             taskMessageRes = task.currentMessageRes,
                             taskMessageArgs = task.currentMessageArgs,
+                            taskRateBytesPerSec = task.currentRateBytesPerSec,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp)
@@ -691,6 +711,7 @@ private fun TaskItem(
     taskProgress: Float,
     taskMessageRes: Int?,
     taskMessageArgs: Array<out Any>?,
+    taskRateBytesPerSec: Long,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
     color: Color = cardColor(false),
@@ -724,7 +745,6 @@ private fun TaskItem(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterVertically)
-                    .animateContentSize(animationSpec = getAnimateTween())
             ) {
                 taskMessageRes?.let { messageRes ->
                     Text(
@@ -736,24 +756,33 @@ private fun TaskItem(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
+
                 if (taskProgress < 0) { //负数则代表不确定
                     LinearProgressIndicator(
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        LinearProgressIndicator(
-                            progress = { taskProgress },
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
-                        )
+                    LinearProgressIndicator(
+                        progress = { taskProgress },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    taskProgress.takeIf { it >= 0f }?.let { progress ->
                         Text(
-                            text = "${(taskProgress * 100).toInt()}%",
-                            modifier = Modifier.align(Alignment.CenterVertically),
+                            text = "${(progress * 100).toInt()}%",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    taskRateBytesPerSec.takeIf { it >= 0L }?.let { bytes ->
+                        val text = remember(bytes) { "${formatFileSize(bytes)}/s" }
+                        Text(
+                            text = text,
                             style = MaterialTheme.typography.labelMedium
                         )
                     }

@@ -22,51 +22,32 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import fury.mc.launcher.context.readRawContent
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fury.mc.launcher.setting.enums.isLauncherInDarkTheme
 import fury.mc.launcher.ui.base.BaseScreen
-import fury.mc.launcher.ui.code_editor.EditorState
 import fury.mc.launcher.ui.code_editor.SoraEditor
+import fury.mc.launcher.ui.code_editor.lang.MarkdownLanguage
 import fury.mc.launcher.ui.code_editor.scheme.SchemeIDEADark
 import fury.mc.launcher.ui.code_editor.scheme.SchemeIDEALight
 import fury.mc.launcher.ui.screens.NormalNavKey
-import fury.mc.launcher.utils.logging.Logger.lWarning
+import fury.mc.launcher.viewmodel.LocalHomePageViewModel
 import fury.mc.launcher.viewmodel.ScreenBackStackViewModel
-import io.github.rosemoe.sora.text.Content
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
-fun LicenseScreen(
-    key: NormalNavKey.License,
-    backStackViewModel: ScreenBackStackViewModel
+fun HomePageEditorScreen(
+    backStackViewModel: ScreenBackStackViewModel,
 ) {
+    val homePageViewModel = LocalHomePageViewModel.current
+    val editorState by homePageViewModel.editorState.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     val isDark = isLauncherInDarkTheme()
 
-    var editorState by remember { mutableStateOf<EditorState>(EditorState.Loading) }
-
-    LaunchedEffect(key) {
-        editorState = EditorState.Loading
-        val content = withContext(Dispatchers.IO) {
-            runCatching {
-                context.readRawContent(key.raw)
-            }.getOrElse { e ->
-                lWarning("Unable to read R.raw license", e)
-                e.message
-            }
-        }
-        editorState = EditorState.Success(Content(content))
-    }
-
     BaseScreen(
-        screenKey = key,
+        screenKey = NormalNavKey.HomePageEditor,
         currentKey = backStackViewModel.mainScreen.currentKey
     ) { isVisible ->
         AnimatedVisibility(
@@ -77,12 +58,15 @@ fun LicenseScreen(
             val scheme = remember(isDark) {
                 if (isDark) SchemeIDEADark() else SchemeIDEALight()
             }
+            val language = remember { MarkdownLanguage(true) }
 
             SoraEditor(
                 state = editorState,
+                language = language,
                 scheme = scheme,
-                isReadOnly = true,
-                onSaveClick = {}
+                onSaveClick = {
+                    homePageViewModel.localEditorSave(context)
+                }
             )
         }
     }

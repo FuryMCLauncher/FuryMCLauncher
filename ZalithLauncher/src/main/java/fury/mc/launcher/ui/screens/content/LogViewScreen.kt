@@ -27,27 +27,39 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import fury.mc.launcher.context.readRawContent
+import androidx.navigation3.runtime.NavBackStack
 import fury.mc.launcher.setting.enums.isLauncherInDarkTheme
 import fury.mc.launcher.ui.base.BaseScreen
 import fury.mc.launcher.ui.code_editor.EditorState
 import fury.mc.launcher.ui.code_editor.SoraEditor
+import fury.mc.launcher.ui.code_editor.lang.LogLanguage
 import fury.mc.launcher.ui.code_editor.scheme.SchemeIDEADark
 import fury.mc.launcher.ui.code_editor.scheme.SchemeIDEALight
 import fury.mc.launcher.ui.screens.NormalNavKey
+import fury.mc.launcher.ui.screens.TitledNavKey
+import fury.mc.launcher.ui.screens.navigateTo
 import fury.mc.launcher.utils.logging.Logger.lWarning
 import fury.mc.launcher.viewmodel.ScreenBackStackViewModel
 import io.github.rosemoe.sora.text.Content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+
+/**
+ * 导航到日志查看器
+ */
+fun NavBackStack<TitledNavKey>.navigateToLogView(
+    logPath: String,
+) = this.navigateTo(
+    screenKey = NormalNavKey.LogView(logPath = logPath),
+    useClassEquality = true
+)
 
 @Composable
-fun LicenseScreen(
-    key: NormalNavKey.License,
+fun LogViewScreen(
+    key: NormalNavKey.LogView,
     backStackViewModel: ScreenBackStackViewModel
 ) {
-    val context = LocalContext.current
     val isDark = isLauncherInDarkTheme()
 
     var editorState by remember { mutableStateOf<EditorState>(EditorState.Loading) }
@@ -56,9 +68,9 @@ fun LicenseScreen(
         editorState = EditorState.Loading
         val content = withContext(Dispatchers.IO) {
             runCatching {
-                context.readRawContent(key.raw)
+                File(key.logPath).readText()
             }.getOrElse { e ->
-                lWarning("Unable to read R.raw license", e)
+                lWarning("Unable to read log file!", e)
                 e.message
             }
         }
@@ -77,10 +89,12 @@ fun LicenseScreen(
             val scheme = remember(isDark) {
                 if (isDark) SchemeIDEADark() else SchemeIDEALight()
             }
+            val language = remember { LogLanguage() }
 
             SoraEditor(
                 state = editorState,
                 scheme = scheme,
+                language = language,
                 isReadOnly = true,
                 onSaveClick = {}
             )

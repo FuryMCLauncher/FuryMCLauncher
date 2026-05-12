@@ -30,13 +30,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fury.mc.launcher.R
+import fury.mc.launcher.context.COPY_LABEL_LINK
 import fury.mc.launcher.coroutine.Task
 import fury.mc.launcher.coroutine.TaskSystem
 import fury.mc.launcher.game.control.ControlManager
@@ -49,12 +53,18 @@ import fury.mc.launcher.ui.screens.NestedNavKey
 import fury.mc.launcher.ui.screens.NormalNavKey
 import fury.mc.launcher.ui.screens.content.elements.Background
 import fury.mc.launcher.ui.screens.content.elements.LaunchGameOperation
+import fury.mc.launcher.ui.screens.content.navigateToLogView
 import fury.mc.launcher.ui.screens.main.MainScreen
+import fury.mc.launcher.ui.screens.main.crashlogs.LogShareMenu
+import fury.mc.launcher.ui.screens.main.crashlogs.LogShareMenuOperation
+import fury.mc.launcher.ui.screens.main.crashlogs.ShareLinkOperation
 import fury.mc.launcher.ui.theme.ZalithLauncherTheme
 import fury.mc.launcher.ui.theme.feativals.FestivalEffects
 import fury.mc.launcher.upgrade.TooFrequentOperationException
 import fury.mc.launcher.utils.compareLangTag
+import fury.mc.launcher.utils.copyText
 import fury.mc.launcher.utils.festival.getTodayFestivals
+import fury.mc.launcher.utils.file.shareFile
 import fury.mc.launcher.utils.isChinese
 import fury.mc.launcher.utils.logging.Logger.lInfo
 import fury.mc.launcher.utils.network.openLink
@@ -63,9 +73,14 @@ import fury.mc.launcher.utils.string.getMessageOrToString
 import fury.mc.launcher.viewmodel.BackgroundViewModel
 import fury.mc.launcher.viewmodel.ErrorViewModel
 import fury.mc.launcher.viewmodel.EventViewModel
+import fury.mc.launcher.viewmodel.HomePageOperation
+import fury.mc.launcher.viewmodel.HomePageViewModel
 import fury.mc.launcher.viewmodel.LaunchGameViewModel
 import fury.mc.launcher.viewmodel.LauncherUpgradeOperation
 import fury.mc.launcher.viewmodel.LauncherUpgradeViewModel
+import fury.mc.launcher.viewmodel.LocalHomePageViewModel
+import fury.mc.launcher.viewmodel.LogShareViewModel
+import fury.mc.launcher.viewmodel.LogsUploadViewModel
 import fury.mc.launcher.viewmodel.ModpackConfirmUseMobileDataOperation
 import fury.mc.launcher.viewmodel.ModpackImportOperation
 import fury.mc.launcher.viewmodel.ModpackImportViewModel
@@ -115,6 +130,21 @@ class MainActivity : BaseAppCompatActivity() {
     val launcherUpgradeViewModel: LauncherUpgradeViewModel by viewModels()
 
     /**
+     * 启动器自定义主页 ViewModel
+     */
+    val homePageViewModel: HomePageViewModel by viewModels()
+
+    /**
+     * 游戏日志分享菜单 ViewModel
+     */
+    private val logShareViewModel: LogShareViewModel by viewModels()
+
+    /**
+     * 游戏日志上传 ViewModel
+     */
+    private val logsUploadViewModel: LogsUploadViewModel by viewModels()
+
+    /**
      * 是否开启捕获按键模式
      */
     private var isCaptureKey = false
@@ -161,36 +191,12 @@ class MainActivity : BaseAppCompatActivity() {
                     }
                     is EventViewModel.Event.OpenLink -> {
                         val url = event.url
-                        lifecycleScope.launch(Dispatchers.Main) {
+                        withContext(Dispatchers.Main) {
                             this@MainActivity.openLink(url)
                         }
                     }
                     is EventViewModel.Event.CheckUpdate -> {
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            try {
-                                val success = launcherUpgradeViewModel.checkManually(
-                                    onInProgress = {
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(this@MainActivity, getString(R.string.generic_in_progress), Toast.LENGTH_SHORT).show()
-                                        }
-                                    },
-                                    onIsLatest = {
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(this@MainActivity, getString(R.string.upgrade_is_latest), Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                )
-                                if (!success) throw RuntimeException()
-                            } catch (_: TooFrequentOperationException) {
-                                //太频繁了
-                                return@launch
-                            } catch (_: Exception) {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@MainActivity, getString(R.string.upgrade_get_remote_failed), Toast.LENGTH_SHORT).show()
-                                }
-                                return@launch
-                            }
-                        }
+                        checkUpdate()
                     }
                     is EventViewModel.Event.KeepScreen -> {
                         keepScreen(event.on)
@@ -200,6 +206,39 @@ class MainActivity : BaseAppCompatActivity() {
                     }
                     is EventViewModel.Event.DownloadPlugins -> {
                         showDownloadPlugins(event.link)
+                    }
+                    is EventViewModel.Event.Launch.Main -> {
+                        launchGameViewModel.tryLaunch()
+                    }
+                    is EventViewModel.Event.Launch.PlayServer -> {
+                        launchGameViewModel.quickPlayServer(event.version, event.address)
+                    }
+                    is EventViewModel.Event.Launch.PlaySave -> {
+                        launchGameViewModel.quickPlaySave(event.version, event.saveName)
+                    }
+                    is EventViewModel.Event.LogShare.ShareGameLog -> {
+                        val file = event.logFile
+                        if (file.exists()) {
+                            logsUploadViewModel.check(file)
+                            logShareViewModel.openMenu(file)
+                        }
+                    }
+                    is EventViewModel.Event.HomePage.Reload -> {
+                        homePageViewModel.reloadPage(true)
+                    }
+                    is EventViewModel.Event.HomePage.GenDocPage -> {
+                        if (homePageViewModel.isLocalExists()) {
+                            //如果本地主页文件已存在，则警告用户是否进行覆盖
+                            homePageViewModel.updateOperation(
+                                HomePageOperation.WarningOverwrite
+                            )
+                        } else {
+                            homePageViewModel.genDocPage(this@MainActivity)
+                        }
+                    }
+                    is EventViewModel.Event.HomePage.Event -> {
+                        val event0 = event.event
+                        handleHomePageEvent(event0.key, event0.data)
                     }
                     else -> {
                         //忽略
@@ -226,15 +265,18 @@ class MainActivity : BaseAppCompatActivity() {
                         viewModel = backgroundViewModel
                     )
 
-                    MainScreen(
-                        screenBackStackModel = screenBackStackModel,
-                        launchGameViewModel = launchGameViewModel,
-                        eventViewModel = eventViewModel,
-                        modpackImportViewModel = modpackImportViewModel,
-                        submitError = {
-                            errorViewModel.showError(it)
-                        }
-                    )
+                    CompositionLocalProvider(
+                        LocalHomePageViewModel provides homePageViewModel
+                    ) {
+                        MainScreen(
+                            screenBackStackModel = screenBackStackModel,
+                            eventViewModel = eventViewModel,
+                            modpackImportViewModel = modpackImportViewModel,
+                            submitError = {
+                                errorViewModel.showError(it)
+                            }
+                        )
+                    }
 
                     //节日彩蛋效果层
                     FestivalEffects(
@@ -316,6 +358,60 @@ class MainActivity : BaseAppCompatActivity() {
                     }
                 )
 
+                //启动器主页操作流程
+                val homePageOp by homePageViewModel.pageOp.collectAsStateWithLifecycle()
+                HomePageOperation(
+                    operation = homePageOp,
+                    onChange = {
+                        homePageViewModel.updateOperation(it)
+                    },
+                    onGenDocPage = {
+                        homePageViewModel.genDocPage(this@MainActivity)
+                    }
+                )
+
+                //游戏日志分享菜单
+                val logFile = logShareViewModel.currentLogFile
+                if (logShareViewModel.showMenu && logFile != null) {
+                    LogShareMenu(
+                        operation = LogShareMenuOperation.ShowMenu,
+                        onChange = { operation ->
+                            if (operation == LogShareMenuOperation.None) {
+                                logShareViewModel.closeMenu()
+                            }
+                        },
+                        onView = {
+                            screenBackStackModel.mainScreen.backStack.navigateToLogView(
+                                logPath = logFile.absolutePath
+                            )
+                            logShareViewModel.closeMenu()
+                        },
+                        onShare = {
+                            shareFile(this@MainActivity, logFile)
+                            logShareViewModel.closeMenu()
+                        },
+                        canUpload = logsUploadViewModel.canUpload,
+                        onUpload = {
+                            logsUploadViewModel.operation = ShareLinkOperation.Tip
+                            logShareViewModel.closeMenu()
+                        }
+                    )
+                }
+
+                ShareLinkOperation(
+                    operation = logsUploadViewModel.operation,
+                    onChange = { logsUploadViewModel.operation = it },
+                    onUploadChancel = { logsUploadViewModel.cancel() },
+                    onUpload = {
+                        logFile?.let { file ->
+                            logsUploadViewModel.upload(file) { link ->
+                                openLink(link)
+                                copyText(COPY_LABEL_LINK, link, this@MainActivity)
+                            }
+                        }
+                    }
+                )
+
                 //检查更新操作流程
                 LauncherUpgradeOperation(
                     operation = launcherUpgradeViewModel.operation,
@@ -332,6 +428,70 @@ class MainActivity : BaseAppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleImportIfNeeded(intent)
+    }
+
+    /**
+     * 检查启动器更新
+     */
+    private fun checkUpdate() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val success = launcherUpgradeViewModel.checkManually(
+                    onInProgress = {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@MainActivity, getString(R.string.generic_in_progress), Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    onIsLatest = {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@MainActivity, getString(R.string.upgrade_is_latest), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+                if (!success) throw RuntimeException()
+            } catch (_: TooFrequentOperationException) {
+                //太频繁了
+                return@launch
+            } catch (_: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, getString(R.string.upgrade_get_remote_failed), Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+        }
+    }
+
+    /**
+     * 处理自定义主页的事件
+     */
+    private suspend fun handleHomePageEvent(
+        key: String,
+        data: String?
+    ) {
+        when (key) {
+            "url" -> {
+                if (data != null) {
+                    withContext(Dispatchers.Main) {
+                        this@MainActivity.openLink(data)
+                    }
+                }
+            }
+            "check_update" -> checkUpdate()
+            "launch_game" -> launchGameViewModel.tryLaunch()
+            "copy" -> {
+                if (data != null) {
+                    withContext(Dispatchers.Main) {
+                        copyText(
+                            null,
+                            data,
+                            this@MainActivity,
+                            showToast = true
+                        )
+                    }
+                }
+            }
+            "refresh_page" -> homePageViewModel.reloadPage(true)
+        }
     }
 
     /**
