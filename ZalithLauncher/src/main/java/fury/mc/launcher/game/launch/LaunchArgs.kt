@@ -45,6 +45,7 @@ import fury.mc.launcher.utils.logging.Logger.lDebug
 import fury.mc.launcher.utils.logging.Logger.lInfo
 import fury.mc.launcher.utils.logging.Logger.lWarning
 import fury.mc.launcher.utils.network.ServerAddress
+import fury.mc.launcher.utils.string.compareVersion
 import fury.mc.launcher.utils.string.insertJSONValueList
 import fury.mc.launcher.utils.string.isEmptyOrBlank
 import fury.mc.launcher.utils.string.isLowerTo
@@ -58,6 +59,7 @@ class LaunchArgs(
     private val offlineServer: OfflineYggdrasilServer,
     private val gameDirPath: File,
     private val version: Version,
+    private val clientJar: File,
     private val gameManifest: GameManifest,
     private val runtime: Runtime,
     private val readAssetsFile: (path: String) -> String,
@@ -206,13 +208,15 @@ class LaunchArgs(
             }
         }
         argsList.add("-Dlog4j.configurationFile=${configFilePath.absolutePath}")
-        argsList.add("-Dminecraft.client.jar=${version.getClientJar().absolutePath}")
+        argsList.add("-Dminecraft.client.jar=${clientJar.absolutePath}")
+        argsList.add("-Dminecraft.launcher.brand=${InfoDistributor.LAUNCHER_NAME}")
+        argsList.add("-Dminecraft.launcher.version=${BuildConfig.VERSION_NAME}")
 
         return argsList
     }
 
     private fun getMinecraftJVMArgs(): Array<String> {
-        val gameManifest1 = getGameManifest(version, true)
+        val gameManifest1 = getGameManifest(version, skipInheriting = true)
 
 //        // Parse Forge 1.17+ additional JVM Arguments
 //        if (versionInfo.inheritsFrom == null || versionInfo.arguments == null || versionInfo.arguments.jvm == null) {
@@ -271,11 +275,7 @@ class LaunchArgs(
      */
     private fun generateLaunchClassPath(gameManifest: GameManifest): String {
         val classpathList = mutableListOf<String>()
-
         val classpath: Array<String> = generateLibClasspath(gameManifest)
-
-        val clientClass = version.getClientJar()
-        val clientClasspath: String = clientClass.absolutePath
 
         for (jarFile in classpath) {
             val jarFileObj = File(jarFile)
@@ -285,8 +285,8 @@ class LaunchArgs(
             }
             classpathList.add(jarFile)
         }
-        if (clientClass.exists()) {
-            classpathList.add(clientClasspath)
+        if (clientJar.exists()) {
+            classpathList.add(clientJar.absolutePath)
         }
 
         return classpathList.joinToString(":")
@@ -300,14 +300,61 @@ class LaunchArgs(
         val libs = LinkedHashMap<GameManifest.Library, String>()
 
         for (libItem in gameManifest.libraries) {
-            if (!(GameManifest.Rule.checkRules(libItem.rules) && !libItem.isNative)) continue
-            val path = libItem.progressLibrary() ?: continue
+            if (!GameManifest.Rule.checkRules(libItem.rules)) {
+                lDebug("Library ignored due to unmatched rules: ${libItem.name}")
+                continue
+            }
+            if (libItem.isNative) {
+                lDebug("Library ignored because it is a native library: ${libItem.name}")
+                continue
+            }
+            val path = libItem.progressLibrary() ?: run {
+                lDebug("Library ignored due to library filtering: ${libItem.name}")
+                continue
+            }
             with(libSortFix) {
                 libs.insertLib(libItem, getLibrariesHome() + "/" + path)
             }
         }
-        return libs.values.toTypedArray<String>()
+
+        //最后进行去重
+        val deduplicated = LinkedHashMap<GameManifest.Library, String>()
+        val bestVersionMap = mutableMapOf<String, Pair<GameManifest.Library, String>>()
+
+        for ((lib, path) in libs) {
+            val nameParts = lib.name.split(":")
+            if (nameParts.size < 3) {
+                deduplicated[lib] = path
+                continue
+            }
+            val groupArtifact = "${nameParts[0]}:${nameParts[1]}"
+            val version = nameParts[2]
+
+            val existing = bestVersionMap[groupArtifact]
+            if (existing == null) {
+                bestVersionMap[groupArtifact] = lib to path
+                deduplicated[lib] = path
+            } else {
+                val existingVersion = existing.first.name.split(":")[2]
+                val cmp = version.compareVersion(existingVersion)
+                if (cmp > 0) {
+                    //重复库，仅保留高版本
+                    lInfo("Duplicate library detected: $groupArtifact, replacing version $existingVersion with higher version $version")
+                    deduplicated.remove(existing.first)
+                    bestVersionMap[groupArtifact] = lib to path
+                    deduplicated[lib] = path
+                } else if (cmp < 0) {
+                    lDebug("Duplicate library detected: $groupArtifact, ignoring lower version $version (keeping $existingVersion)")
+                } else {
+                    //版本重复，仅保留一个
+                    lDebug("Duplicate library detected: $groupArtifact, ignoring duplicate version $version (keeping first occurrence)")
+                }
+            }
+        }
+
+        return deduplicated.values.toTypedArray<String>()
     }
+
 
     /**
      * @return 库相对路径
@@ -341,7 +388,7 @@ class LaunchArgs(
         varArgMap["game_directory"] = gameDirPath.absolutePath
         varArgMap["user_properties"] = "{}"
         varArgMap["user_type"] = "msa"
-        varArgMap["version_name"] = version.getVersionInfo()!!.minecraftVersion
+        varArgMap["version_name"] = gameManifest.id
 
         setLauncherInfo(varArgMap)
 

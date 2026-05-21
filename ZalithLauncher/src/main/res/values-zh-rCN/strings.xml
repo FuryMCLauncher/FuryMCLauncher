@@ -54,11 +54,14 @@
     <string name="generic_copied">已复制</string>
     <string name="generic_no_matching_items">没有符合条件的项目</string>
     <string name="generic_follow_system">跟随系统</string>
+    <string name="generic_edit">编辑</string>
+    <string name="generic_view">查看</string>
     <!--  页面标题  -->
     <string name="page_title_version_list">版本列表</string>
     <string name="page_title_version_manage">管理版本</string>
     <string name="page_title_account_list">账号列表</string>
     <string name="page_title_select_files">选择路径</string>
+    <string name="page_title_home_page_editor">主页编辑器</string>
     <!--  文件  -->
     <string name="files_browse_folder">浏览目录</string>
     <string name="files_importing">导入文件中</string>
@@ -139,6 +142,7 @@
     <string name="notification_data_jvm_service_name">前台安装服务</string>
     <string name="notification_data_jvm_service_running">正在前台服务安装游戏中</string>
     <string name="notification_data_terracotta_message">在多人联机的过程中，启动器会使用前台服务来显示当前联机状态，因此需要您开启通知权限。</string>
+    <string name="notification_jvm_running_name">JVM 保活服务</string>
     <!--  麦克风  -->
     <string name="microphone_check_title">检查麦克风输入</string>
     <string name="microphone_check_volume">音量：%d</string>
@@ -416,6 +420,17 @@
     <string name="game_styles_joystick_hide_when_gamepad">在手柄操作时隐藏</string>
     <string name="game_styles_save_failed">保存样式失败</string>
     <string name="game_saponsorship_finished_game">启动器已经成功运行了 %s 次游戏！如果您觉得好用的话，可以考虑赞助支持一下作者喔！qwq</string>
+
+    <string name="game_vulkan_check_title">Vulkan 检测</string>
+    <string name="game_vulkan_check_text">检查您的设备是否支持使用 Vulkan 运行 Minecraft 26.2+，结果仅供参考</string>
+    <string name="game_vulkan_check_version">Vulkan 版本：%s</string>
+    <string name="game_vulkan_check_turnip">使用 Turnip：%s</string>
+    <string name="game_vulkan_check_extensions">依赖的扩展：</string>
+    <string name="game_vulkan_check_missing_extensions">缺失的扩展：</string>
+    <string name="game_vulkan_check_features">依赖的功能：</string>
+    <string name="game_vulkan_check_missing_features">缺失的功能：</string>
+    <string name="game_vulkan_check_unsupp">您的设备不支持使用 Vulkan 运行 Minecraft 26.2+</string>
+    <string name="game_vulkan_check_supp">您的设备可以使用 Vulkan 运行 Minecraft 26.2+</string>
     <!--  渲染器  -->
     <string name="renderer_version_support">MC 版本支持：</string>
     <string name="renderer_version_unsupported_warning">当前渲染器 %s 不支持该游戏版本，继续使用可能导致渲染错误或游戏崩溃！您确定要无视风险坚持访问吗？</string>
@@ -644,6 +659,7 @@
     <string name="versions_overview_logs_folder">日志文件夹</string>
     <string name="versions_overview_crash_report_folder">崩溃报告文件夹</string>
     <string name="versions_overview_cant_share_folder_message">当前设备没有第三方应用可以打开该目录！</string>
+    <string name="versions_overview_log">运行日志</string>
     <string name="versions_config_version_settings">版本独立设置</string>
     <string name="versions_config_game_settings">游戏独立设置</string>
     <string name="versions_config_support_settings">额外支持设置</string>
@@ -1025,6 +1041,17 @@
     <string name="settings_launcher_background_video_volume_summary">背景内容是视频时，可以通过这个选项调整音量</string>
     <string name="settings_launcher_festivals_effects_title">持续型节日彩蛋效果</string>
     <string name="settings_launcher_festivals_effects_summary">在特定时间段显示持续型彩蛋效果</string>
+    <string name="settings_launcher_home_page_title">主页</string>
+    <string name="settings_launcher_home_page_type_blank">空白</string>
+    <string name="settings_launcher_home_page_type_local">从本地加载</string>
+    <string name="settings_launcher_home_page_type_url">从网络加载</string>
+    <string name="settings_launcher_home_page_type_local_tip">编辑启动器本地的主页文件，启动器使用经过扩展的 Markdown 语法描述主页，编辑完成后，点击刷新重载主页</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc">生成官方主页文档</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc_exists">当前已存在主页文件，你确定要将已有的主页覆盖掉，并重新生成官方文档主页吗？</string>
+    <string name="settings_launcher_home_page_type_url_tip">从指定的链接获取启动器主页文件并缓存，定时刷新重载主页</string>
+    <string name="settings_launcher_home_page_type_warning">自定义主页属于第三方内容，启动器不对其内容做任何担保，请谨慎接收陌生的主页！</string>
+    <string name="settings_launcher_home_page_url">主页下载链接：</string>
+    <string name="settings_launcher_home_page_loading">加载主页中</string>
     <!--  控制  -->
     <string name="control_keyboard_bind_title">绑定按键</string>
     <string name="control_keyboard_bind_summary">请在您的键盘上按下想要绑定的按键</string>
@@ -1176,7 +1203,7 @@
     <!--  关于  -->
     <string name="about_launcher_title">关于启动器</string>
     <string name="about_launcher_version">启动器版本：%s</string>
-    <string name="about_launcher_author_movtery_title">UnTamed Fury</string>
+    <string name="about_launcher_author_movtery_title">墨北MovTery</string>
     <string name="about_launcher_author_movtery_text">%s 的作者</string>
     <string name="about_launcher_project_link">项目地址</string>
     <string name="about_sponsor">赞助支持</string>
@@ -1216,7 +1243,6 @@
     <string name="vibrate_kind_double_click">双击</string>
     <string name="vibrate_kind_heavy_click">重击</string>
     <string name="vibrate_kind_tick">滴答</string>
-
     <string name="festivals_new_year">新年快乐！</string>
     <string name="festivals_april_fools">愚人节快乐！</string>
     <string name="festivals_christmas">圣诞节快乐！</string>

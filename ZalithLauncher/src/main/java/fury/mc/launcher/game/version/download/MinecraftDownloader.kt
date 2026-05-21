@@ -26,6 +26,7 @@ import fury.mc.launcher.game.versioninfo.models.VersionManifest
 import fury.mc.launcher.utils.file.formatFileSize
 import fury.mc.launcher.utils.logging.Logger.lError
 import fury.mc.launcher.utils.logging.Logger.lInfo
+import fury.mc.launcher.utils.network.withSpeedReport
 import fury.mc.launcher.utils.string.getMessageOrToString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +62,7 @@ class MinecraftDownloader(
     private val verifyIntegrity: Boolean,
     private val downloader: BaseMinecraftDownloader = BaseMinecraftDownloader(verifyIntegrity = verifyIntegrity),
     private val mode: DownloadMode = DownloadMode.DOWNLOAD,
-    private val onCompletion: suspend () -> Unit = {},
+    private val onCompletion: suspend (Task) -> Unit = {},
     private val onError: (message: String) -> Unit = {},
     private val onThrowable: ((throwable: Throwable) -> Unit)? = null,
     private val maxDownloadThreads: Int = 64
@@ -74,6 +75,9 @@ class MinecraftDownloader(
 
     private var allDownloadTasks = mutableListOf<DownloadTask>()
     private var downloadFailedTasks = mutableListOf<DownloadTask>()
+
+    /** 用于速率监测的已写入大小记录 */
+    private val mSpeedReport = AtomicLong(0L)
 
     private fun getTaskMessage(download: Int, verify: Int): Int =
         when (mode) {
@@ -114,7 +118,7 @@ class MinecraftDownloader(
                 //清除任务信息
                 task.updateProgress(1f, null)
 
-                onCompletion()
+                onCompletion(task)
             },
             onError = { e ->
                 lError("Failed to download Minecraft!", e)
@@ -170,7 +174,18 @@ class MinecraftDownloader(
             }
 
             try {
-                downloadJobs.joinAll()
+                withSpeedReport(
+                    onTimeReport = {
+                        val currentBytes = mSpeedReport.getAndSet(0L)
+                        task.updateSpeed(currentBytes)
+                    },
+                    onClear = {
+                        mSpeedReport.set(0L)
+                        task.clearSpeed()
+                    }
+                ) {
+                    downloadJobs.joinAll()
+                }
             } catch (e: CancellationException) {
                 downloadJobs.forEach { it.cancel("Parent cancelled", e) }
                 throw e
@@ -276,6 +291,7 @@ class MinecraftDownloader(
                 },
                 onFileDownloadedSize = { downloadedSize ->
                     downloadedFileSize.addAndGet(downloadedSize)
+                    mSpeedReport.addAndGet(downloadedSize)
                 },
                 onFileDownloaded = {
                     downloadedFileCount.incrementAndGet()

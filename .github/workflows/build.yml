@@ -2,6 +2,15 @@ name: Build APK
 
 on:
   workflow_dispatch:
+    inputs:
+      variant:
+        description: 'Build variant (Debug or Release)'
+        required: true
+        default: 'Debug'
+        type: choice
+        options:
+          - Debug
+          - Release
   workflow_call:
     inputs:
       variant:
@@ -52,10 +61,17 @@ jobs:
       - name: Build APK for ${{ matrix.arch }}
         run: |
           chmod +x gradlew
-          ./gradlew ZalithLauncher:assemble${{ inputs.variant }} -Darch=${{ matrix.arch }}
+          VARIANT="${{ inputs.variant }}"
+          if [ -z "$VARIANT" ]; then
+            VARIANT="${{ github.event.inputs.variant }}"
+          fi
+          if [ -z "$VARIANT" ]; then
+            VARIANT="Debug"
+          fi
+          ./gradlew ZalithLauncher:assemble$VARIANT -Darch=${{ matrix.arch }}
 
       - name: Upload Release APK for ${{ matrix.arch }}
-        if: inputs.variant == 'Release'
+        if: inputs.variant == 'Release' || github.event.inputs.variant == 'Release'
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
@@ -63,7 +79,7 @@ jobs:
           path: ZalithLauncher/build/outputs/apk/release/*.apk
 
       - name: Upload Debug APK for ${{ matrix.arch }}
-        if: inputs.variant == 'Debug'
+        if: inputs.variant == 'Debug' || (github.event_name == 'workflow_dispatch' && github.event.inputs.variant == 'Debug') || (github.event_name != 'workflow_call' && github.event_name != 'workflow_dispatch')
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:

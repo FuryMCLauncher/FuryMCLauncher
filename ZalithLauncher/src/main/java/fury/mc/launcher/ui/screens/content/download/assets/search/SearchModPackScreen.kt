@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import fury.mc.launcher.game.download.assets.platform.curseforge.models.curseFor
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthFeatures
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthModpackCategory
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.modrinthModLoaderFilters
+import fury.mc.launcher.setting.AllSettings
 import fury.mc.launcher.ui.components.MarqueeText
 import fury.mc.launcher.ui.components.SimpleAlertDialog
 import fury.mc.launcher.ui.screens.NormalNavKey
@@ -91,6 +93,10 @@ fun SearchModPackScreen(
     eventViewModel: EventViewModel,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> }
 ) {
+    val initialPlatform = remember {
+        AllSettings.searchModpackPlatform.getValue()
+    }
+
     val context = LocalContext.current
     val modpackViewModel = rememberModpackViewModel()
 
@@ -127,7 +133,10 @@ fun SearchModPackScreen(
         screenKey = NormalNavKey.SearchModPack,
         currentKey = downloadModPackScreenCurrentKey,
         platformClasses = PlatformClasses.MOD_PACK,
-        initialPlatform = Platform.MODRINTH,
+        initialPlatform = initialPlatform,
+        onPlatformChange = {
+            AllSettings.searchModpackPlatform.save(it)
+        },
         getCategories = { platform ->
             when (platform) {
                 Platform.CURSEFORGE -> CurseForgeModpackCategory.entries

@@ -95,7 +95,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-private class VersionsScreenViewModel() : ViewModel() {
+private class VersionsScreenViewModel : ViewModel() {
     /** 版本类别分类 */
     var versionCategory by mutableStateOf(VersionCategory.ALL)
         private set
@@ -558,9 +558,8 @@ private fun VersionsLayout(
                                     .padding(vertical = 6.dp)
                                     .animateItem(),
                                 onSelected = {
-                                    if (version.isValid() && version != currentVersion) {
-                                        VersionsManager.saveCurrentVersion(version.getVersionName())
-                                    } else {
+                                    if (version == currentVersion) return@VersionItemLayout
+                                    if (!VersionsManager.saveVersion(version)) {
                                         //不允许选择无效版本
                                         versionsOperation = VersionsOperation.InvalidDelete(version)
                                     }

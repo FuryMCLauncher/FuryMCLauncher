@@ -26,7 +26,8 @@ class Driver(
     appVersion: String,
     val name: String,
     val summary: String? = null,
-    val path: String
+    val path: String,
+    val isLauncher: Boolean,
 ): ApkPlugin(
     packageName = id,
     appName = appName,

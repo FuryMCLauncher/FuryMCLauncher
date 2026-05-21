@@ -18,19 +18,20 @@
 
 package fury.mc.launcher.ui.base
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 abstract class FullScreenAppCompatActivity : AbstractAppCompatActivity() {
     @CallSuper
@@ -39,23 +40,43 @@ abstract class FullScreenAppCompatActivity : AbstractAppCompatActivity() {
         applyFullImmersive()
     }
 
-    @Suppress("DEPRECATION")
-    private val systemUIVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            )
+    @CallSuper
+    override fun onPostResume() {
+        super.onPostResume()
+        applyFullImmersive()
+    }
+
+    @CallSuper
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            applyFullImmersive()
+        }
+    }
 
     @Suppress("DEPRECATION")
     private fun applyFullImmersive() {
-        window?.decorView?.systemUiVisibility = systemUIVisibility
-        if (Build.VERSION.SDK_INT >= 28) {
-            val attributes: WindowManager.LayoutParams = window.attributes
-            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            window.setAttributes(attributes)
+        window?.let { window ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val params = window.attributes
+                val newParams = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                if (params.layoutInDisplayCutoutMode != newParams) {
+                    params.layoutInDisplayCutoutMode = newParams
+                    window.attributes = params
+                }
+            }
+
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            WindowCompat.getInsetsController(window, window.decorView).apply {
+                hide(WindowInsetsCompat.Type.systemBars())
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+
+            window.navigationBarColor = Color.TRANSPARENT
+            window.statusBarColor = Color.TRANSPARENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                window.isNavigationBarContrastEnforced = false
+            }
         }
     }
 }
@@ -64,10 +85,7 @@ abstract class FullScreenAppCompatActivity : AbstractAppCompatActivity() {
 fun Modifier.applyFullscreen(value: Boolean): Modifier {
     val modifier = Modifier.fillMaxSize()
     return then(
-        modifier.windowInsetsPadding(
-            WindowInsets.captionBar.run {
-                if (value) this else union(WindowInsets.displayCutout)
-            }
-        )
+        if (value) modifier
+        else modifier.windowInsetsPadding(WindowInsets.displayCutout)
     )
 }

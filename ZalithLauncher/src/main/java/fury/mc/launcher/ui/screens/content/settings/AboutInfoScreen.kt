@@ -103,7 +103,7 @@ fun AboutInfoScreen(
                             ) {
                                 Image(
                                     modifier = Modifier.padding(12.dp),
-                                    painter = painterResource(R.drawable.img_launcher),
+                                    painter = painterResource(R.mipmap.ic_launcher),
                                     contentDescription = null
                                 )
                             }
@@ -127,8 +127,8 @@ fun AboutInfoScreen(
                                     )
                                     PillButton(
                                         modifier = Modifier.weight(1f),
-                                        text = "Wiki",
-                                        onClick = { openLink("https://github.com/FuryMCLauncher/FuryMCLauncher/wiki") },
+                                        text = "Discord",
+                                        onClick = { openLink("https://discord.gg/dwYVAbuhyW") },
                                         containerColor = MaterialTheme.colorScheme.secondaryContainer
                                     )
                                 }
@@ -190,7 +190,7 @@ fun AboutInfoScreen(
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         ButtonIconItem(
-                            icon = painterResource(R.drawable.img_zalith_launcher), // Restored Zalith Logo
+                            icon = painterResource(R.drawable.img_launcher_zalith), // Restored Zalith Logo
                             title = "Zalith Launcher Team",
                             text = "Original Project Author: Movtery",
                             button = {

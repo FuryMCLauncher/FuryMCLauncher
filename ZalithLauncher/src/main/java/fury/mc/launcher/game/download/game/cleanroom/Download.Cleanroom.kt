@@ -21,6 +21,7 @@ package fury.mc.launcher.game.download.game.cleanroom
 import fury.mc.launcher.coroutine.Task
 import fury.mc.launcher.game.addons.modloader.cleanroom.CleanroomVersion
 import fury.mc.launcher.utils.network.downloadFileSuspend
+import fury.mc.launcher.utils.network.withSpeedReport
 import java.io.File
 
 const val CLEANROOM_DOWNLOAD_ID = "Download.Cleanroom"
@@ -33,11 +34,21 @@ fun getCleanroomDownloadTask(
 ): Task {
     return Task.runTask(
         id = CLEANROOM_DOWNLOAD_ID,
-        task = {
-            downloadFileSuspend(
-                url = cleanroomVersion.installerUrl,
-                outputFile = targetTempInstaller
-            )
+        task = { task ->
+            withSpeedReport(
+                onSpeedReport = { bytes ->
+                    task.updateSpeed(bytes)
+                },
+                onClear = {
+                    task.clearSpeed()
+                }
+            ) { report ->
+                downloadFileSuspend(
+                    url = cleanroomVersion.installerUrl,
+                    outputFile = targetTempInstaller,
+                    sizeCallback = report
+                )
+            }
         }
     )
 }

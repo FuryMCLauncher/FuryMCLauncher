@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -39,12 +41,9 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
-import com.mikepenz.markdown.compose.LazyMarkdownSuccess
-import com.mikepenz.markdown.m3.Markdown
-import com.mikepenz.markdown.model.rememberMarkdownState
 import fury.mc.launcher.R
-import fury.mc.launcher.ui.components.defaultMDTypography
+import fury.mc.launcher.ui.components.MarkdownView
+import fury.mc.launcher.ui.components.defaultRichTextStyle
 import fury.mc.launcher.ui.theme.cardColor
 import fury.mc.launcher.ui.theme.onCardColor
 import fury.mc.launcher.upgrade.RemoteData
@@ -59,7 +58,8 @@ fun UpgradeDialog(
     onDismissRequest: () -> Unit,
     onFilesClick: () -> Unit,
     onIgnored: () -> Unit,
-    onLinkClick: (String) -> Unit
+    onLinkClick: (String) -> Unit,
+    onCloudDriveClick: (RemoteData.CloudDrive) -> Unit
 ) {
     val body = remember(data) {
         data.findCurrentBody(Locale.getDefault()) ?: data.defaultBody
@@ -102,9 +102,6 @@ fun UpgradeDialog(
                 )
                 val markdownBody = "$versionStr  \n$dateStr  \n\n${body.markdown}"
 
-                val state = rememberMarkdownState(
-                    content = markdownBody,
-                )
                 CompositionLocalProvider(
                     LocalUriHandler provides object : UriHandler {
                         override fun openUri(uri: String) {
@@ -112,21 +109,14 @@ fun UpgradeDialog(
                         }
                     }
                 ) {
-                    Markdown(
+                    MarkdownView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f, fill = false)
-                            .padding(horizontal = 20.dp),
-                        markdownState = state,
-                        typography = defaultMDTypography(),
-                        imageTransformer = Coil3ImageTransformerImpl,
-                        success = { state, components, modifier ->
-                            LazyMarkdownSuccess(
-                                modifier = modifier,
-                                state = state,
-                                components = components,
-                            )
-                        },
+                            .padding(horizontal = 20.dp)
+                            .verticalScroll(rememberScrollState()),
+                        content = markdownBody,
+                        richTextStyle = defaultRichTextStyle(),
                     )
                 }
 
@@ -144,7 +134,15 @@ fun UpgradeDialog(
                     } else {
                         FilledTonalButton(
                             onClick = {
-                                onLinkClick(cloudDrive.link)
+                                if (cloudDrive.links.isEmpty()) {
+                                    //未配置多网盘链接，使用默认链接（旧版兼容，必定会有）
+                                    onLinkClick(cloudDrive.link)
+                                } else if (cloudDrive.links.size == 1) {
+                                    //只有一个网盘链接，则直接访问链接
+                                    onLinkClick(cloudDrive.links[0].link)
+                                } else {
+                                    onCloudDriveClick(cloudDrive)
+                                }
                             }
                         ) {
                             Text(text = stringResource(R.string.upgrade_cloud_drive))

@@ -18,9 +18,7 @@
 
 package fury.mc.launcher.game.version.installed
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import fury.mc.launcher.R
+import fury.mc.launcher.game.launch.LogName
 import fury.mc.launcher.game.path.getVersionsHome
 import fury.mc.launcher.game.version.installed.utils.parseJsonToVersionInfo
 import fury.mc.launcher.info.InfoDistributor
@@ -118,7 +116,7 @@ object VersionsManager {
                     }
                 }
 
-                versions = newVersions.toList()
+                versions = newVersions.sortedWith(VersionComparator)
 
                 gameInfo = refreshCurrentInfo()
                 lDebug("Version list refreshed, refreshing the current version now.")
@@ -204,7 +202,7 @@ object VersionsManager {
         _currentVersion.update { version }
     }
 
-    private fun getVersion(name: String?): Version? {
+    fun getVersion(name: String?): Version? {
         name?.let { versionName ->
             return versions.find { it.getVersionName() == versionName }?.takeIf { it.isValid() }
         }
@@ -233,6 +231,11 @@ object VersionsManager {
     fun getZalithVersionPath(name: String) = File(getVersionPath(name), InfoDistributor.LAUNCHER_IDENTIFIER)
 
     /**
+     * @return 游戏的上一次运行日志
+     */
+    fun getLatestLog(version: Version) = File(getZalithVersionPath(version), LogName.GAME.fileName)
+
+    /**
      * @return 获取当前版本设置的图标
      */
     fun getVersionIconFile(version: Version) = File(getZalithVersionPath(version), "VersionIcon.png")
@@ -254,6 +257,16 @@ object VersionsManager {
 
     /**
      * 保存当前选择的版本
+     * @return 是否执行保存
+     */
+    fun saveVersion(version: Version, refresh: Boolean = true): Boolean {
+        if (!version.isValid()) return false
+        saveCurrentVersion(version.getVersionName(), refresh)
+        return true
+    }
+
+    /**
+     * 保存当前选择的版本
      */
     fun saveCurrentVersion(versionName: String, refresh: Boolean = true) {
         runCatching {
@@ -267,20 +280,6 @@ object VersionsManager {
             }
         }.onFailure { e ->
             lError("An exception occurred while saving the currently selected version information.", e)
-        }
-    }
-
-    @Composable
-    fun validateVersionName(
-        newName: String,
-        onError: (message: String) -> Unit
-    ): Boolean {
-        return when {
-            isVersionExists(newName, true) -> {
-                onError(stringResource(R.string.versions_manage_install_exists))
-                true
-            }
-            else -> false
         }
     }
 

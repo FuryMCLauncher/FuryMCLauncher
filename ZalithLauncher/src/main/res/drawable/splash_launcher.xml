@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ FuryMC Launcher 2
+  ~ Zalith Launcher 2
   ~ Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@mipmap/ic_launcher"
+        android:drawable="@drawable/img_launcher"
         android:width="220dp"
         android:height="220dp"
         android:gravity="center"/>
