@@ -22,8 +22,8 @@ import android.os.Build
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.movtery.layer_controller.data.POSITION_RANGE
-import com.movtery.layer_controller.utils.snap.SnapMode
+import fury.mc.layer_controller.data.POSITION_RANGE
+import fury.mc.layer_controller.utils.snap.SnapMode
 import fury.mc.launcher.game.download.assets.platform.Platform
 import fury.mc.launcher.game.path.GamePathManager
 import fury.mc.launcher.game.version.installed.GraphicsApi
