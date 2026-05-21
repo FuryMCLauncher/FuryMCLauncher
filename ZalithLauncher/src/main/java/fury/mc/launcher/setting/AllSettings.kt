@@ -22,14 +22,16 @@ import android.os.Build
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import fury.mc.layer_controller.data.POSITION_RANGE
-import fury.mc.layer_controller.utils.snap.SnapMode
+import com.movtery.layer_controller.data.POSITION_RANGE
+import com.movtery.layer_controller.utils.snap.SnapMode
+import fury.mc.launcher.game.download.assets.platform.Platform
 import fury.mc.launcher.game.path.GamePathManager
 import fury.mc.launcher.game.version.installed.GraphicsApi
 import fury.mc.launcher.info.InfoDistributor
 import fury.mc.launcher.setting.enums.AppLanguage
 import fury.mc.launcher.setting.enums.DarkMode
 import fury.mc.launcher.setting.enums.GestureActionType
+import fury.mc.launcher.setting.enums.HomePageType
 import fury.mc.launcher.setting.enums.MirrorSourceType
 import fury.mc.launcher.setting.enums.MouseControlMode
 import fury.mc.launcher.ui.control.HotbarRule
@@ -332,7 +334,7 @@ object AllSettings : SettingsRegistry() {
     val launcherColorTheme = enumSetting(
         "launcherColorTheme",
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ColorThemeType.DYNAMIC
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ColorThemeType.DYNAMIC else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ColorThemeType.DYNAMIC else ColorThemeType.EMBERMIRE
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ColorThemeType.DYNAMIC else ColorThemeType.EMBERMIRE
     )
 
     /**
@@ -384,6 +386,16 @@ object AllSettings : SettingsRegistry() {
      * 启动器视频背景音量
      */
     val videoBackgroundVolume = intSetting("videoBackgroundVolume", 0, 0..100)
+
+    /**
+     * 启动器主页类型
+     */
+    val homePageType = enumSetting("homePageType", HomePageType.Blank)
+
+    /**
+     * 启动器网络主页下载地址
+     */
+    val homePageURL = stringSetting("homePageURL", "")
 
     /**
      * 启动器上次检查更新时，用户选择忽略的版本号
@@ -577,4 +589,29 @@ object AllSettings : SettingsRegistry() {
      * 是否在打开启动器时，根据特定的运行游戏次数，显示赞助支持弹窗
      */
     val showSponsorship = boolSetting("showSponsorship", true)
+
+    /**
+     * 搜索模组的初始搜索平台
+     */
+    val searchModPlatform = enumSetting("searchModPlatform", Platform.MODRINTH)
+
+    /**
+     * 搜索整合包的初始搜索平台
+     */
+    val searchModpackPlatform = enumSetting("searchModpackPlatform", Platform.MODRINTH)
+
+    /**
+     * 搜索资源包的初始搜索平台
+     */
+    val searchResourcePackPlatform = enumSetting("searchResourcePackPlatform", Platform.MODRINTH)
+
+    /**
+     * 搜索光影的初始搜索平台
+     */
+    val searchShadersPlatform = enumSetting("searchShadersPlatform", Platform.MODRINTH)
+
+    /**
+     * 启动 MC26.2+ 时，自动检查 Vulkan
+     */
+    val autoVulkanChecker = boolSetting("autoVulkanChecker", true)
 }
