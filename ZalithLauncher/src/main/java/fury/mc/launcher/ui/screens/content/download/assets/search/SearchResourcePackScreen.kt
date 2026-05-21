@@ -19,11 +19,13 @@
 package fury.mc.launcher.ui.screens.content.download.assets.search
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import fury.mc.launcher.game.download.assets.platform.Platform
 import fury.mc.launcher.game.download.assets.platform.PlatformClasses
 import fury.mc.launcher.game.download.assets.platform.curseforge.models.CurseForgeResourcePackCategory
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthFeatures
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthResourcePackCategory
+import fury.mc.launcher.setting.AllSettings
 import fury.mc.launcher.ui.screens.NormalNavKey
 import fury.mc.launcher.ui.screens.TitledNavKey
 
@@ -35,6 +37,9 @@ fun SearchResourcePackScreen(
     downloadResourcePackScreenCurrentKey: TitledNavKey?,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> }
 ) {
+    val initialPlatform = remember {
+        AllSettings.searchResourcePackPlatform.getValue()
+    }
     SearchAssetsScreen(
         mainScreenKey = mainScreenKey,
         parentScreenKey = downloadResourcePackScreenKey,
@@ -42,7 +47,10 @@ fun SearchResourcePackScreen(
         screenKey = NormalNavKey.SearchResourcePack,
         currentKey = downloadResourcePackScreenCurrentKey,
         platformClasses = PlatformClasses.RESOURCE_PACK,
-        initialPlatform = Platform.MODRINTH,
+        initialPlatform = initialPlatform,
+        onPlatformChange = {
+            AllSettings.searchResourcePackPlatform.save(it)
+        },
         getCategories = { platform ->
             when (platform) {
                 Platform.CURSEFORGE -> CurseForgeResourcePackCategory.entries

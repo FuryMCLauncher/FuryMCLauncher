@@ -133,9 +133,7 @@ import fury.mc.launcher.utils.animation.swapAnimateDpAsState
 import fury.mc.launcher.utils.copyText
 import fury.mc.launcher.utils.logging.Logger.lInfo
 import fury.mc.launcher.utils.string.isEmptyOrBlank
-import fury.mc.launcher.utils.string.isNotEmptyOrBlank
 import fury.mc.launcher.utils.string.stripColorCodes
-import fury.mc.launcher.viewmodel.LaunchGameViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -474,8 +472,8 @@ private fun ServerDataOperation(
 fun ServerListScreen(
     mainScreenKey: TitledNavKey?,
     versionsScreenKey: TitledNavKey?,
-    launchGameViewModel: LaunchGameViewModel,
     version: Version,
+    onQuickPlay: (Version, String) -> Unit,
     backToMainScreen: () -> Unit,
 ) {
     if (!version.isValid()) {
@@ -573,7 +571,7 @@ fun ServerListScreen(
                             onRefresh = { viewModel.loadServer(it, true) },
                             onCopy = { viewModel.copy(context, it) },
                             onPlay = { address ->
-                                launchGameViewModel.quickPlayServer(version, address)
+                                onQuickPlay(version, address)
                             },
                             onEdit = { data ->
                                 viewModel.dataOperation = ServerDataOperation.EditServer(data)
@@ -1137,11 +1135,7 @@ private fun ServerEditDialog(
 ) {
     //默认的服务器名称，不填时使用它
     val defaultName = stringResource(R.string.servers_list_add_server_default_name)
-    var name by remember {
-        mutableStateOf(
-            name?.takeIf { it.isNotEmptyOrBlank() } ?: defaultName
-        )
-    }
+    var name by remember { mutableStateOf(name?.takeIf { it.isNotEmpty() } ?: defaultName) }
     var ip by remember { mutableStateOf(address) }
 
     //仅检查服务器地址栏是否为空
@@ -1236,8 +1230,7 @@ private fun ServerEditDialog(
                             modifier = Modifier.weight(1f),
                             onClick = {
                                 if (!isIpEmpty) {
-                                    val name0 = if (name.isEmptyOrBlank()) defaultName
-                                    else name
+                                    val name0 = name.ifEmpty { defaultName }
 
                                     onApply(name0, ip)
                                     onDismissRequest()

@@ -33,7 +33,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import fury.mc.launcher.game.download.assets.downloadSingleForVersions
-import fury.mc.launcher.game.download.assets.install.unpackSaveZip
+import fury.mc.launcher.game.version.saves.unpackSaveZip
 import fury.mc.launcher.game.download.assets.platform.PlatformClasses
 import fury.mc.launcher.ui.screens.NestedNavKey
 import fury.mc.launcher.ui.screens.NormalNavKey

@@ -51,11 +51,14 @@
     <string name="generic_copied">已複製</string>
     <string name="generic_no_matching_items">沒有符合條件的項目</string>
     <string name="generic_follow_system">跟隨系統</string>
+    <string name="generic_edit">編輯</string>
+    <string name="generic_view">檢視</string>
     <!--  页面标题  -->
     <string name="page_title_version_list">版本列表</string>
     <string name="page_title_version_manage">管理版本</string>
     <string name="page_title_account_list">帳號列表</string>
     <string name="page_title_select_files">選擇路徑</string>
+    <string name="page_title_home_page_editor">主頁編輯器</string>
     <!--  資料  -->
     <string name="files_browse_folder">瀏覽資料夾</string>
     <string name="files_importing">正在匯入檔案</string>
@@ -124,6 +127,7 @@
     <string name="notification_data_jvm_service_name">前景安裝服務</string>
     <string name="notification_data_jvm_service_running">正在透過前景服務安裝遊戲中</string>
     <string name="notification_data_terracotta_message">在多人連線的過程中，啟動器會使用前台服務來顯示當前連線狀態，因此需要您開啟通知權限。</string>
+    <string name="notification_jvm_running_name">JVM 保活服務</string>
     <!--  麥克風  -->
     <string name="microphone_check_title">檢查麥克風輸入</string>
     <string name="microphone_check_volume">音量：%d</string>
@@ -379,6 +383,17 @@
     <string name="game_styles_joystick_hide_when_gamepad">使用手把時隱藏</string>
     <string name="game_styles_save_failed">儲存樣式失敗</string>
     <string name="game_saponsorship_finished_game">啟動器已成功執行遊戲 %s 次！如果您覺得好用，可以考慮贊助支持作者喔！qwq</string>
+
+    <string name="game_vulkan_check_title">Vulkan 檢測</string>
+    <string name="game_vulkan_check_text">檢查您的裝置是否支援使用 Vulkan 執行 Minecraft 26.2+，結果僅供參考</string>
+    <string name="game_vulkan_check_version">Vulkan 版本：%s</string>
+    <string name="game_vulkan_check_turnip">使用 Turnip：%s</string>
+    <string name="game_vulkan_check_extensions">依賴的擴充功能：</string>
+    <string name="game_vulkan_check_missing_extensions">缺少的擴充功能：</string>
+    <string name="game_vulkan_check_features">依賴的功能：</string>
+    <string name="game_vulkan_check_missing_features">缺少的功能：</string>
+    <string name="game_vulkan_check_unsupp">您的裝置不支援使用 Vulkan 執行 Minecraft 26.2+</string>
+    <string name="game_vulkan_check_supp">您的裝置可以使用 Vulkan 執行 Minecraft 26.2+</string>
     <!--  渲染器  -->
     <string name="renderer_version_support">MC 版本支援：</string>
     <string name="renderer_version_unsupported_warning">目前渲染器 %s 不支援此遊戲版本，繼續使用可能導致渲染錯誤或遊戲崩潰！您確定要忽略風險並繼續嗎？</string>
@@ -596,6 +611,7 @@
     <string name="versions_overview_logs_folder">日誌資料夾</string>
     <string name="versions_overview_crash_report_folder">崩潰報告資料夾</string>
     <string name="versions_overview_cant_share_folder_message">目前裝置上沒有可開啟此資料夾的第三方應用程式！</string>
+    <string name="versions_overview_log">執行日誌</string>
     <string name="versions_config_version_settings">版本獨立設定</string>
     <string name="versions_config_game_settings">遊戲獨立設定</string>
     <string name="versions_config_support_settings">額外支援設定</string>
@@ -1027,6 +1043,17 @@
     <string name="settings_launcher_background_video_volume_summary">當背景內容為影片時，可以透過此選項調整音量</string>
     <string name="settings_launcher_festivals_effects_title">持續型節日彩蛋效果</string>
     <string name="settings_launcher_festivals_effects_summary">在特定時間期間顯示持續型彩蛋效果</string>
+    <string name="settings_launcher_home_page_title">主頁</string>
+    <string name="settings_launcher_home_page_type_blank">空白</string>
+    <string name="settings_launcher_home_page_type_local">從本機載入</string>
+    <string name="settings_launcher_home_page_type_url">從網路載入</string>
+    <string name="settings_launcher_home_page_type_local_tip">編輯啟動器本機的主頁檔案，啟動器使用經過擴充的 Markdown 語法描述主頁，編輯完成後，點擊重新整理以重新載入主頁</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc">生成官方主頁文件</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc_exists">目前已存在主頁檔案，你確定要將已有的主頁覆蓋掉，並重新生成官方文件主頁嗎？</string>
+    <string name="settings_launcher_home_page_type_url_tip">從指定的連結獲取啟動器主頁檔案並快取，定時重新整理以重新載入主頁</string>
+    <string name="settings_launcher_home_page_type_warning">自訂主頁屬於第三方內容，啟動器不對其內容做任何擔保，請謹慎接收不熟悉的主頁！</string>
+    <string name="settings_launcher_home_page_url">主頁下載連結：</string>
+    <string name="settings_launcher_home_page_loading">載入主頁中</string>
     <string name="just_now">現在</string>
     <string name="minutes_ago">%d 分鐘前</string>
     <string name="hours_ago">%d 小時前</string>
@@ -1207,13 +1234,11 @@
     <string name="control_editor_special_joystick_style_joystick_size">搖桿大小</string>
     <string name="control_editor_exit_message">您確定要直接退出嗎？這將導致您的任何變更都無法被儲存。若需要儲存，請檢查編輯器選單。</string>
     <string name="control_editor_exit_confirm">直接退出</string>
-
     <string name="vibrate_kind_one_shot">持續</string>
     <string name="vibrate_kind_click">單擊</string>
     <string name="vibrate_kind_double_click">雙擊</string>
     <string name="vibrate_kind_heavy_click">重擊</string>
     <string name="vibrate_kind_tick">滴答</string>
-
     <string name="festivals_new_year">新年快樂！</string>
     <string name="festivals_april_fools">愚人節快樂！</string>
     <string name="festivals_christmas">聖誕節快樂！</string>

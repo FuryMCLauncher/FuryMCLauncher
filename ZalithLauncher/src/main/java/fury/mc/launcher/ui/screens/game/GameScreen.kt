@@ -353,6 +353,8 @@ private class GameViewModel(
         mouseScrollDownEvent.cancel()
         gameTextSender.cancel()
         onChangeTextInputMode(TextInputMode.DISABLE)
+        moveOnlyPointers.clear()
+        occupiedPointers.clear()
     }
 
     init {
@@ -550,8 +552,7 @@ fun GameScreen(
         operation = viewModel.forceCloseState,
         onChange = { viewModel.forceCloseState = it },
         onForceClose = {
-            Terracotta.setWaiting(true)
-            terracottaViewModel.forceStopVPN()
+            Terracotta.setWaiting(false)
             ZLNativeInvoker.jvmExit(0, false)
         },
         text = stringResource(R.string.game_menu_option_force_close_text)
@@ -695,6 +696,9 @@ fun GameScreen(
 
         LogBox(
             enableLog = !viewModel.isEditingLayout && logState.value,
+            onClose = {
+                onLogStateChange(LogState.CLOSE)
+            },
             modifier = Modifier.fillMaxSize()
         )
 

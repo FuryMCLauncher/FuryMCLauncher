@@ -30,6 +30,7 @@ import fury.mc.launcher.setting.AllSettings
 import fury.mc.launcher.setting.enums.MirrorSourceType
 import fury.mc.launcher.utils.isChinaMainland
 import fury.mc.launcher.utils.network.downloadFileSuspend
+import fury.mc.launcher.utils.network.withSpeedReport
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -62,7 +63,19 @@ fun getOptiFineDownloadTask(
             val optifineUrl = getOFUrlMirrorable(optifine)
 
             task.updateProgress(-1f, R.string.download_game_install_base_download_file, ModLoader.OPTIFINE.displayName, optifine.realVersion)
-            downloadFileSuspend(optifineUrl, targetTempInstaller)
+            withSpeedReport(
+                onSpeedReport = { bytes ->
+                    task.updateSpeed(bytes)
+                },
+                onClear = {
+                    task.clearSpeed()
+                }
+            ) {
+                downloadFileSuspend(
+                    url = optifineUrl,
+                    outputFile = targetTempInstaller
+                )
+            }
         }
     )
 }
@@ -80,7 +93,20 @@ fun getOptiFineModsDownloadTask(
 
             //开始下载为 Mod
             task.updateProgress(-1f, R.string.download_game_install_base_download_file, ModLoader.OPTIFINE.displayName, optifine.realVersion)
-            downloadFileSuspend(optifineUrl, File(tempModsDir, optifine.fileName))
+            withSpeedReport(
+                onSpeedReport = { bytes ->
+                    task.updateSpeed(bytes)
+                },
+                onClear = {
+                    task.clearSpeed()
+                }
+            ) { report ->
+                downloadFileSuspend(
+                    url = optifineUrl,
+                    outputFile = File(tempModsDir, optifine.fileName),
+                    sizeCallback = report
+                )
+            }
         }
     )
 }

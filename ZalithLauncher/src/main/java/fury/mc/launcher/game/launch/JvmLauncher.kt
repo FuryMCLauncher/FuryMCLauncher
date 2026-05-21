@@ -59,8 +59,12 @@ open class JvmLauncher(
         return launchJvm(
             context = context,
             jvmArgs = argList,
-            userHome = jvmLaunchInfo.userHome,
-            userArgs = AllSettings.jvmArgs.getValue(),
+            userHome = jvmLaunchInfo.userHome ?: GamePathManager.getUserPath(),
+            userArgs = if (jvmLaunchInfo.useUserJvm) {
+                AllSettings.jvmArgs.getValue()
+            } else {
+                ""
+            },
             screenSize = screenSize,
             useLocalLanguage = false
         )
@@ -70,7 +74,9 @@ open class JvmLauncher(
         return getGameHome()
     }
 
-    override fun getLogName(): String = LogName.JVM.fileName
+    override fun getLogFile(): File = File(
+        PathManager.DIR_FILES_EXTERNAL, LogName.JVM.fileName
+    )
 
     private fun getStartupNeeded(
         screenSize: IntSize

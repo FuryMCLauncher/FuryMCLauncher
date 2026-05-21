@@ -26,6 +26,7 @@ import fury.mc.launcher.game.addons.modloader.forgelike.forge.ForgeVersions
 import fury.mc.launcher.game.addons.modloader.forgelike.neoforge.NeoForgeVersion
 import fury.mc.launcher.game.addons.modloader.forgelike.neoforge.NeoForgeVersions
 import fury.mc.launcher.utils.network.downloadFromMirrorListSuspend
+import fury.mc.launcher.utils.network.withSpeedReport
 import java.io.File
 
 const val FORGE_LIKE_DOWNLOAD_ID = "Download.ForgeLike"
@@ -44,7 +45,7 @@ fun getForgeLikeDownloadTask(
 ): Task {
     return Task.runTask(
         id = FORGE_LIKE_DOWNLOAD_ID,
-        task = {
+        task = { task ->
             //获取安装器下载链接
             val url = if (forgeLikeVersion.isNeoForge) {
                 NeoForgeVersions.getDownloadUrl(forgeLikeVersion as NeoForgeVersion)
@@ -52,7 +53,20 @@ fun getForgeLikeDownloadTask(
                 ForgeVersions.getDownloadUrl(forgeLikeVersion as ForgeVersion)
             }
 
-            downloadFromMirrorListSuspend(url.mapBMCLMirrorUrls(), targetTempInstaller)
+            withSpeedReport(
+                onSpeedReport = { bytes ->
+                    task.updateSpeed(bytes)
+                },
+                onClear = {
+                    task.clearSpeed()
+                }
+            ) { report ->
+                downloadFromMirrorListSuspend(
+                    urls = url.mapBMCLMirrorUrls(),
+                    outputFile = targetTempInstaller,
+                    sizeCallback = report
+                )
+            }
         }
     )
 }

@@ -82,13 +82,13 @@ import coil3.compose.AsyncImage
 import fury.mc.launcher.R
 import fury.mc.launcher.context.COPY_LABEL_SAVE_SEED
 import fury.mc.launcher.coroutine.TaskSystem
-import fury.mc.launcher.game.download.assets.install.unpackSaveZip
 import fury.mc.launcher.game.version.installed.Version
 import fury.mc.launcher.game.version.installed.VersionFolders
 import fury.mc.launcher.game.version.installed.VersionInfo
 import fury.mc.launcher.game.version.saves.SaveData
 import fury.mc.launcher.game.version.saves.isCompatible
 import fury.mc.launcher.game.version.saves.parseLevelDatFile
+import fury.mc.launcher.game.version.saves.unpackSaveZip
 import fury.mc.launcher.ui.base.BaseScreen
 import fury.mc.launcher.ui.components.CardTitleLayout
 import fury.mc.launcher.ui.components.ContentCheckBox
@@ -122,7 +122,6 @@ import fury.mc.launcher.utils.animation.swapAnimateDpAsState
 import fury.mc.launcher.utils.copyText
 import fury.mc.launcher.utils.formatDate
 import fury.mc.launcher.viewmodel.ErrorViewModel
-import fury.mc.launcher.viewmodel.LaunchGameViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -251,8 +250,8 @@ private fun rememberSavesManageViewModel(
 fun SavesManagerScreen(
     mainScreenKey: TitledNavKey?,
     versionsScreenKey: TitledNavKey?,
-    launchGameViewModel: LaunchGameViewModel,
     version: Version,
+    onQuickPlay: (Version, String) -> Unit,
     backToMainScreen: () -> Unit,
     swapToDownload: () -> Unit,
     submitError: (ErrorViewModel.ThrowableMessage) -> Unit
@@ -313,10 +312,7 @@ fun SavesManagerScreen(
                         savesDir = savesDir,
                         updateOperation = { savesOperation = it },
                         quickPlay = { saveName ->
-                            launchGameViewModel.quickPlaySave(
-                                version = version,
-                                saveName = saveName
-                            )
+                            onQuickPlay(version, saveName)
                         },
                         renameSave = { saveData, newName ->
                             runProgress {

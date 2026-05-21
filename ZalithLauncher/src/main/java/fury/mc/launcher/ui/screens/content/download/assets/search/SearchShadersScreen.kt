@@ -19,11 +19,13 @@
 package fury.mc.launcher.ui.screens.content.download.assets.search
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import fury.mc.launcher.game.download.assets.platform.Platform
 import fury.mc.launcher.game.download.assets.platform.PlatformClasses
 import fury.mc.launcher.game.download.assets.platform.curseforge.models.CurseForgeShadersCategory
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthFeatures
 import fury.mc.launcher.game.download.assets.platform.modrinth.models.ModrinthShadersCategory
+import fury.mc.launcher.setting.AllSettings
 import fury.mc.launcher.ui.screens.NormalNavKey
 import fury.mc.launcher.ui.screens.TitledNavKey
 
@@ -35,6 +37,9 @@ fun SearchShadersScreen(
     downloadShadersScreenCurrentKey: TitledNavKey?,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> }
 ) {
+    val initialPlatform = remember {
+        AllSettings.searchShadersPlatform.getValue()
+    }
     SearchAssetsScreen(
         mainScreenKey = mainScreenKey,
         parentScreenKey = downloadShadersScreenKey,
@@ -42,7 +47,10 @@ fun SearchShadersScreen(
         screenKey = NormalNavKey.SearchShaders,
         currentKey = downloadShadersScreenCurrentKey,
         platformClasses = PlatformClasses.SHADERS,
-        initialPlatform = Platform.MODRINTH,
+        initialPlatform = initialPlatform,
+        onPlatformChange = {
+            AllSettings.searchShadersPlatform.save(it)
+        },
         getCategories = { platform ->
             when (platform) {
                 Platform.CURSEFORGE -> CurseForgeShadersCategory.entries

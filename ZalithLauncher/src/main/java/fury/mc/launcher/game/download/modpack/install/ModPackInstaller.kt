@@ -39,6 +39,7 @@ import fury.mc.launcher.utils.logging.Logger.lInfo
 import fury.mc.launcher.utils.network.downloadFileSuspend
 import fury.mc.launcher.utils.network.downloadFromMirrorListSuspend
 import fury.mc.launcher.utils.network.isUsingMobileData
+import fury.mc.launcher.utils.network.withSpeedReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
@@ -161,17 +162,27 @@ class ModPackInstaller(
                     fun updateProgress() {
                         task.updateProgress((downloadedSize.toDouble() / totalFileSize).toFloat())
                     }
-                    downloadFromMirrorListSuspend(
-                        urls = version
-                            .platformDownloadUrl()
-                            .mapMCIMMirrorUrls(),
-                        sha1 = version.platformSha1(),
-                        outputFile = installerFile,
-                        sizeCallback = { size ->
-                            downloadedSize += size
-                            updateProgress()
+                    withSpeedReport(
+                        onSpeedReport = { bytes ->
+                            task.updateSpeed(bytes)
+                        },
+                        onClear = {
+                            task.clearSpeed()
                         }
-                    )
+                    ) { report ->
+                        downloadFromMirrorListSuspend(
+                            urls = version
+                                .platformDownloadUrl()
+                                .mapMCIMMirrorUrls(),
+                            sha1 = version.platformSha1(),
+                            outputFile = installerFile,
+                            sizeCallback = { size ->
+                                downloadedSize += size
+                                updateProgress()
+                                report(size)
+                            }
+                        )
+                    }
                     //下载icon图片
                     task.updateProgress(-1f, null)
                     iconUrl?.let { iconUrl ->

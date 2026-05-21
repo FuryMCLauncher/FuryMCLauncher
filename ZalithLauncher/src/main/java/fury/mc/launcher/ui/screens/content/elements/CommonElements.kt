@@ -88,6 +88,7 @@ import fury.mc.launcher.ui.screens.TitledNavKey
 import fury.mc.launcher.ui.theme.cardColor
 import fury.mc.launcher.ui.theme.onCardColor
 import fury.mc.launcher.utils.file.checkExtensionOrThrow
+import fury.mc.launcher.utils.file.formatFileSize
 import fury.mc.launcher.utils.platform.bytesToMB
 import fury.mc.launcher.utils.platform.getTotalMemory
 import fury.mc.launcher.utils.platform.getUsedMemory
@@ -440,14 +441,32 @@ private fun InstallingTaskItem(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
+                @Composable
+                fun RateBytesPerSecText() {
+                    task.currentRateBytesPerSec.takeIf { it >= 0L }?.let { bytes ->
+                        val text = remember(bytes) { "${formatFileSize(bytes)}/s" }
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
                 if (task.currentProgress < 0) { //负数则代表不确定
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.weight(1f)
+                        )
+                        RateBytesPerSecText()
+                    }
                 } else {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         LinearProgressIndicator(
                             progress = { task.currentProgress },
@@ -455,9 +474,9 @@ private fun InstallingTaskItem(
                                 .weight(1f)
                                 .align(Alignment.CenterVertically)
                         )
+                        RateBytesPerSecText()
                         Text(
                             text = "${(task.currentProgress * 100).toInt()}%",
-                            modifier = Modifier.align(Alignment.CenterVertically),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }

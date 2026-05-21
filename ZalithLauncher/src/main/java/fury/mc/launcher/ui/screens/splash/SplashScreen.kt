@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.LocalContentColor
@@ -38,6 +37,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import fury.mc.launcher.components.InstallableItem
 import fury.mc.launcher.info.InfoDistributor
+import fury.mc.launcher.setting.AllSettings
+import fury.mc.launcher.ui.base.applyFullscreen
 import fury.mc.launcher.ui.screens.NormalNavKey
 import fury.mc.launcher.ui.screens.rememberTransitionSpec
 import fury.mc.launcher.ui.theme.onBackgroundColor
@@ -54,7 +55,7 @@ fun SplashScreen(
     screenViewModel: SplashBackStackViewModel
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.applyFullscreen(AllSettings.launcherFullScreen.state)
     ) {
         TopBar(
             modifier = Modifier

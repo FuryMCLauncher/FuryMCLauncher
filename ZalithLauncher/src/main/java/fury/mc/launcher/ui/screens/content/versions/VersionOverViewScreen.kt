@@ -76,6 +76,7 @@ import fury.mc.launcher.utils.image.isImageFile
 import fury.mc.launcher.utils.logging.Logger.lError
 import fury.mc.launcher.utils.string.getMessageOrToString
 import fury.mc.launcher.viewmodel.ErrorViewModel
+import fury.mc.launcher.viewmodel.EventViewModel
 import kotlinx.coroutines.Dispatchers
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -86,6 +87,7 @@ fun VersionOverViewScreen(
     versionsScreenKey: TitledNavKey?,
     backToMainScreen: () -> Unit,
     onExport: () -> Unit,
+    eventViewModel: EventViewModel,
     version: Version,
     submitError: (ErrorViewModel.ThrowableMessage) -> Unit
 ) {
@@ -153,6 +155,12 @@ fun VersionOverViewScreen(
             AnimatedItem(scope) { yOffset ->
                 VersionManagementLayout(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    version = version,
+                    onShareLog = { logFile ->
+                        eventViewModel.sendEvent(
+                            EventViewModel.Event.LogShare.ShareGameLog(logFile)
+                        )
+                    },
                     onEditSummary = { versionsOperation = VersionsOperation.EditSummary(version) },
                     onRename = { versionsOperation = VersionsOperation.Rename(version) },
                     onExport = onExport,
@@ -216,12 +224,16 @@ private fun VersionInfoLayout(
         paddingValues = PaddingValues(all = 8.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             VersionOverviewItem(
-                modifier = Modifier.padding(start = 4.dp).weight(1f),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .weight(1f),
                 version = version,
                 versionSummary = versionSummary,
                 refreshKey = refreshKey
@@ -281,20 +293,33 @@ private fun VersionInfoLayout(
 @Composable
 private fun VersionManagementLayout(
     modifier: Modifier = Modifier,
-    onEditSummary: () -> Unit = {},
-    onRename: () -> Unit = {},
-    onExport: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    version: Version,
+    onShareLog: (File) -> Unit,
+    onEditSummary: () -> Unit,
+    onRename: () -> Unit,
+    onExport: () -> Unit,
+    onDelete: () -> Unit,
 ) {
+    val logFile = remember(version) {
+        VersionsManager.getLatestLog(version)
+    }
+    val logExists = remember(logFile) {
+        logFile.exists()
+    }
+
     VersionChunkBackground(
         modifier = modifier,
         paddingValues = PaddingValues(all = 8.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp)
         ) {
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp).padding(top = 4.dp, bottom = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .padding(top = 4.dp, bottom = 8.dp),
                 text = stringResource(R.string.versions_settings_overview_management),
                 style = MaterialTheme.typography.labelLarge
             )
@@ -325,6 +350,17 @@ private fun VersionManagementLayout(
                     )
                 }
                 OutlinedButton(
+                    modifier = Modifier.padding(end = 12.dp),
+                    enabled = logExists,
+                    onClick = {
+                        onShareLog(logFile)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.versions_overview_log)
+                    )
+                }
+                OutlinedButton(
                     onClick = onDelete,
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
@@ -350,10 +386,14 @@ private fun VersionQuickActions(
         paddingValues = PaddingValues(all = 8.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp)
         ) {
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp).padding(top = 4.dp, bottom = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .padding(top = 4.dp, bottom = 8.dp),
                 text = stringResource(R.string.versions_settings_overview_quick_actions),
                 style = MaterialTheme.typography.labelLarge
             )
@@ -532,3 +572,4 @@ private fun VersionsOperation(
         }
     }
 }
+

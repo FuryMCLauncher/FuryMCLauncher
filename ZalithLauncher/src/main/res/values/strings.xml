@@ -54,11 +54,14 @@
     <string name="generic_copied">Copied</string>
     <string name="generic_no_matching_items">No matching items</string>
     <string name="generic_follow_system">Follow System</string>
+    <string name="generic_edit">Edit</string>
+    <string name="generic_view">View</string>
     <!-- Page Title -->
     <string name="page_title_version_list">Version List</string>
     <string name="page_title_version_manage">Manage Versions</string>
     <string name="page_title_account_list">Account List</string>
     <string name="page_title_select_files">Select Path</string>
+    <string name="page_title_home_page_editor">Home Page Editor</string>
     <!-- Files -->
     <string name="files_browse_folder">Browse Folder</string>
     <string name="files_importing">Importing Files</string>
@@ -140,6 +143,7 @@
     <string name="notification_data_jvm_service_name">Foreground Installation Service</string>
     <string name="notification_data_jvm_service_running">Installing the game via foreground service</string>
     <string name="notification_data_terracotta_message">During multiplayer sessions, the launcher uses a foreground service to display the current connection status, so notification permission is required.</string>
+    <string name="notification_jvm_running_name">JVM Keep-Alive Service</string>
     <!--  Microphone  -->
     <string name="microphone_check_title">Check Microphone Input</string>
     <string name="microphone_check_volume">Volume: %d</string>
@@ -417,6 +421,17 @@
     <string name="game_styles_joystick_hide_when_gamepad">Hide When Using Gamepad</string>
     <string name="game_styles_save_failed">Failed to Save Style</string>
     <string name="game_saponsorship_finished_game">The launcher has successfully run the game %s times! If you find it useful, please consider supporting the developer! :)</string>
+
+    <string name="game_vulkan_check_title">Vulkan Check</string>
+    <string name="game_vulkan_check_text">Check whether your device supports running Minecraft 26.2+ with Vulkan. Results are for reference only.</string>
+    <string name="game_vulkan_check_version">Vulkan version: %s</string>
+    <string name="game_vulkan_check_turnip">Using Turnip: %s</string>
+    <string name="game_vulkan_check_extensions">Required extensions:</string>
+    <string name="game_vulkan_check_missing_extensions">Missing extensions:</string>
+    <string name="game_vulkan_check_features">Required features:</string>
+    <string name="game_vulkan_check_missing_features">Missing features:</string>
+    <string name="game_vulkan_check_unsupp">Your device does not support running Minecraft 26.2+ with Vulkan</string>
+    <string name="game_vulkan_check_supp">Your device supports running Minecraft 26.2+ with Vulkan</string>
     <!-- Renderers -->
     <string name="renderer_version_support">MC Version Support:</string>
     <string name="renderer_version_unsupported_warning">The current renderer %s does not support this game version. Continuing to use it may cause rendering errors or crashes! Are you sure you want to proceed?</string>
@@ -566,7 +581,7 @@
     <string name="files_select_dir">Select Folder</string>
     <string name="files_current_path">Current path: %s</string>
     <string name="files_no_selectable_content">No selectable content</string>
-    <string name="file_invalid_length">Name too long! (Current: %d, Max: %d)</string>
+    <string name="file_invalid_length">Name too long! (Current: %1$d, Max: %2$d)</string>
     <string name="file_invalid_leading_or_trailing_space">Cannot start or end with a space!</string>
     <!-- Java Runtime -->
     <string name="multirt_runtime_corrupt">Java runtime corrupted</string>
@@ -646,6 +661,7 @@
     <string name="versions_overview_logs_folder">Log Folder</string>
     <string name="versions_overview_crash_report_folder">Crash Report Folder</string>
     <string name="versions_overview_cant_share_folder_message">No third-party app is available on this device to open this folder!</string>
+    <string name="versions_overview_log">Running Log</string>
     <string name="versions_config_version_settings">Version-Specific Settings</string>
     <string name="versions_config_game_settings">Game-Specific Settings</string>
     <string name="versions_config_support_settings">Additional Support Settings</string>
@@ -1027,6 +1043,17 @@
     <string name="settings_launcher_background_video_volume_summary">When the background is a video, you can adjust the volume using this option.</string>
     <string name="settings_launcher_festivals_effects_title">Persistent Festival Easter Egg Effects</string>
     <string name="settings_launcher_festivals_effects_summary">Display persistent easter egg effects during specific time periods</string>
+    <string name="settings_launcher_home_page_title">Home Page</string>
+    <string name="settings_launcher_home_page_type_blank">Blank</string>
+    <string name="settings_launcher_home_page_type_local">Load from Local</string>
+    <string name="settings_launcher_home_page_type_url">Load from URL</string>
+    <string name="settings_launcher_home_page_type_local_tip">Edit the launcher\'s local home page file. The launcher uses an extended Markdown syntax to describe the home page. After editing, click Refresh to reload the home page.</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc">Generate Document</string>
+    <string name="settings_launcher_home_page_type_local_gen_doc_exists">A home page file already exists. Are you sure you want to overwrite the existing home page and regenerate the official documentation home page?</string>
+    <string name="settings_launcher_home_page_type_url_tip">Fetch the launcher home page file from the specified link and cache it, then periodically refresh and reload the home page</string>
+    <string name="settings_launcher_home_page_type_warning">Custom home pages are third-party content. The launcher does not provide any guarantee for their content. Please be cautious when accepting unfamiliar home pages!</string>
+    <string name="settings_launcher_home_page_url">Home Page Download URL:</string>
+    <string name="settings_launcher_home_page_loading">Loading Home Page</string>
     <!--  Control  -->
     <string name="control_keyboard_bind_title">Bind Key</string>
     <string name="control_keyboard_bind_summary">Press the key you want to bind on your keyboard</string>
@@ -1180,8 +1207,6 @@
     <string name="about_launcher_version">Launcher Version: %s</string>
     <string name="about_launcher_author_movtery_title">FuryMC Team</string>
     <string name="about_launcher_author_movtery_text">A dedicated team bringing you the best offline Minecraft experience on Android.</string>
-    <string name="about_launcher_special_thanks">Special Thanks to Zalith Launcher</string>
-    <string name="about_launcher_special_thanks_text">This project is built upon the exceptional foundation provided by the Zalith Launcher team.</string>
     <string name="about_launcher_project_link">GitHub Project</string>
     <string name="about_sponsor">Sponsorship Support</string>
     <string name="about_acknowledgements_title">Acknowledgements</string>
@@ -1242,4 +1267,6 @@
     <string name="festivals_new_year">Happy New Year!</string>
     <string name="festivals_april_fools">Happy April Fools\' Day!</string>
     <string name="festivals_christmas">Merry Christmas!</string>
+    <string name="about_launcher_special_thanks">Special Thanks to Zalith Launcher</string>
+    <string name="about_launcher_special_thanks_text">This project is built upon the exceptional foundation provided by the Zalith Launcher team.</string>
 </resources>

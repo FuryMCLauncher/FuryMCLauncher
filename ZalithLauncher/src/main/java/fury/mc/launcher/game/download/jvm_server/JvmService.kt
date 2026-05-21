@@ -32,6 +32,7 @@ import fury.mc.launcher.bridge.NativeLibraryLoader
 import fury.mc.launcher.game.launch.JvmLaunchInfo
 import fury.mc.launcher.game.launch.JvmLauncher
 import fury.mc.launcher.game.launch.Launcher
+import fury.mc.launcher.notification.NOTIFICATION_ID_JVM_SERVICE
 import fury.mc.launcher.notification.NoticeProgress
 import fury.mc.launcher.notification.NotificationChannelData
 import fury.mc.launcher.path.PathManager
@@ -50,7 +51,6 @@ import java.net.InetSocketAddress
 
 class JvmService : Service() {
     private val scope = CoroutineScope(Dispatchers.Default)
-    private val notificationId: Int = 1001
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -144,12 +144,12 @@ class JvmService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(
-                notificationId,
+                NOTIFICATION_ID_JVM_SERVICE,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             )
         } else {
-            startForeground(notificationId, notification)
+            startForeground(NOTIFICATION_ID_JVM_SERVICE, notification)
         }
     }
 
@@ -162,7 +162,8 @@ class JvmService : Service() {
         val jvmLaunchInfo = JvmLaunchInfo(
             jvmArgs = jvmArgs,
             jreName = jreName,
-            userHome = userHome
+            userHome = userHome,
+            useUserJvm = false,
         )
 
         val launcher = JvmLauncher(

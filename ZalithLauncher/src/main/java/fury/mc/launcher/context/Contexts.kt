@@ -23,6 +23,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
+import androidx.annotation.RawRes
 import fury.mc.launcher.path.PathManager
 import fury.mc.launcher.utils.file.ensureParentDirectory
 import fury.mc.launcher.utils.file.readString
@@ -143,4 +144,12 @@ fun Context.writeLocalFile(
     contentResolver.openOutputStream(newFileUri, "wt")?.use { out ->
         FileUtils.copyFile(inputFile, out)
     }
+}
+
+fun Context.readRawContent(
+    @RawRes raw: Int
+): String {
+    return resources.openRawResource(raw)
+        .bufferedReader()
+        .readText()
 }
