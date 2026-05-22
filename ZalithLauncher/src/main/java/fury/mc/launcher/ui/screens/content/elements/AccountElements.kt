@@ -480,14 +480,16 @@ fun LoginMenuDialog(
                                     onMicrosoftLogin()
                                     onDismissRequest()
                                 }
-//                            )
-//                            //离线登录
-//                            LoginItem(
-//                                modifier = Modifier.fillMaxWidth(),
-//                                title = stringResource(R.string.account_type_local),
-//                                onClick = {
-//                                    onLocalLogin()
+                            /*
+                            )
+                            //离线登录
+                            LoginItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = stringResource(R.string.account_type_local),
+                                onClick = {
+                                    onLocalLogin()
                                     onDismissRequest()
+                            */
                                 }
                             )
                         }
