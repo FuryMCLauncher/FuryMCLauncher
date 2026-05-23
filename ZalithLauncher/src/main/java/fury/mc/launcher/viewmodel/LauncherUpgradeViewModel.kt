@@ -66,10 +66,17 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+import fury.mc.launcher.ui.components.SimpleAlertDialog
+import fury.mc.launcher.upgrade.RemoteNotice
+import fury.mc.launcher.upgrade.getContent
+import fury.mc.launcher.upgrade.getTitle
+
 sealed interface LauncherUpgradeOperation {
     data object None : LauncherUpgradeOperation
     /** 已检查到启动器存在新版本，展示更新信息 */
     data class Upgrade(val data: RemoteData) : LauncherUpgradeOperation
+    /** 展示公告 */
+    data class Notice(val notice: RemoteNotice) : LauncherUpgradeOperation
     /** 选择要安装的安装包文件 */
     data class SelectApk(val data: RemoteData) : LauncherUpgradeOperation
     /** 打开网盘分享 */
@@ -82,6 +89,13 @@ sealed interface LauncherUpgradeOperation {
 private const val LATEST_VERSION = "latest_version_md.json"
 private const val LATEST_API_URL = "$URL_PROJECT_INFO/$LATEST_VERSION"
 private const val LATEST_API_CHINESE_URL = "https://repo.miawa.cn/FuryMC-info/v2/$LATEST_VERSION"
+
+/**
+ * 公告信息获取源
+ */
+private const val NOTICE_JSON = "launcher_notice.json"
+private const val NOTICE_API_URL = "https://api.github.com/repos/FuryMCLauncher/FuryMC-info/contents/$NOTICE_JSON"
+private const val NOTICE_API_CHINESE_URL = "https://repo.miawa.cn/FuryMC-info/$NOTICE_JSON"
 
 /**
  * 用于记录启动器更新 ViewModel
@@ -146,6 +160,30 @@ class LauncherUpgradeViewModel: ViewModel() {
                 )
             }
             updateLastCheckTime()
+
+            //检查公告
+            if (operation == LauncherUpgradeOperation.None) {
+                val notice = fetchNotice()
+                if (notice != null && notice.numbering > AllSettings.lastNoticeNumbering.getValue()) {
+                    operation = LauncherUpgradeOperation.Notice(notice)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchNotice(): RemoteNotice? {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                withRetry(logTag = "LauncherUpgrade", maxRetries = 2) {
+                    val api = GLOBAL_CLIENT.get(NOTICE_API_URL).safeBodyAsJson<GithubContentApi>()
+                    val contentString = decodeBase64(api.content)
+                    GLOBAL_JSON.decodeFromString(RemoteNotice.serializer(), contentString)
+                }
+            }.getOrElse { e ->
+                runCatching {
+                    GLOBAL_CLIENT.get(NOTICE_API_CHINESE_URL).safeBodyAsJson<RemoteNotice>()
+                }.getOrNull()
+            }
         }
     }
 
@@ -277,6 +315,17 @@ fun LauncherUpgradeOperation(
                 onLinkClick = onLinkClick,
                 onCloudDriveClick = { cloudDrive ->
                     onChanged(LauncherUpgradeOperation.OpenCloudDrive(cloudDrive))
+                }
+            )
+        }
+
+        is LauncherUpgradeOperation.Notice -> {
+            SimpleAlertDialog(
+                title = operation.notice.getTitle(Locale.getDefault().toString().lowercase()),
+                text = operation.notice.getContent(Locale.getDefault().toString().lowercase()),
+                onConfirm = {
+                    AllSettings.lastNoticeNumbering.save(operation.notice.numbering)
+                    onChanged(LauncherUpgradeOperation.None)
                 }
             )
         }

@@ -129,10 +129,9 @@ fun UpgradeDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (cloudDrive == null) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
+                    if (cloudDrive != null) {
                         FilledTonalButton(
+                            modifier = Modifier.weight(1f),
                             onClick = {
                                 if (cloudDrive.links.isEmpty()) {
                                     //未配置多网盘链接，使用默认链接（旧版兼容，必定会有）
@@ -145,24 +144,25 @@ fun UpgradeDialog(
                                 }
                             }
                         ) {
-                            Text(text = stringResource(R.string.upgrade_cloud_drive))
+                            Text(text = stringResource(R.string.upgrade_cloud_drive), maxLines = 1)
                         }
-                        Spacer(Modifier.weight(1f))
                     }
 
                     FilledTonalButton(
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             onIgnored()
                             onDismissRequest()
                         }
                     ) {
-                        Text(text = stringResource(R.string.generic_ignore))
+                        Text(text = stringResource(R.string.generic_ignore), maxLines = 1)
                     }
 
                     Button(
+                        modifier = Modifier.weight(1f),
                         onClick = onFilesClick
                     ) {
-                        Text(text = stringResource(R.string.upgrade_more))
+                        Text(text = stringResource(R.string.upgrade_more), maxLines = 1)
                     }
                 }
             }
