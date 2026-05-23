@@ -403,6 +403,11 @@ object AllSettings : SettingsRegistry() {
     val lastIgnoredVersion = intSetting("lastIgnoredVersion", null)
 
     /**
+     * 启动器上次阅读的公告编号
+     */
+    val lastNoticeNumbering = intSetting("lastNoticeNumbering", -1)
+
+    /**
      * 启动器日志保留天数
      */
     val launcherLogRetentionDays = intSetting("launcherLogRetentionDays", 7, 1..14)
