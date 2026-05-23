@@ -326,6 +326,9 @@ fun LauncherUpgradeOperation(
                 onConfirm = {
                     AllSettings.lastNoticeNumbering.save(operation.notice.numbering)
                     onChanged(LauncherUpgradeOperation.None)
+                },
+                onDismiss = {
+                    onChanged(LauncherUpgradeOperation.None)
                 }
             )
         }
