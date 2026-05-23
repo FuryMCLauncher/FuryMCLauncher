@@ -44,6 +44,7 @@ const val URL_PROJECT_INFO: String = "https://api.github.com/repos/FuryMCLaunche
 const val URL_COMMUNITY: String = "https://github.com/FuryMCLauncher/FuryMCLauncher/graphs/contributors"
 const val URL_WEBLATE: String = "https://github.com/FuryMCLauncher/FuryMCLauncher"
 const val URL_SUPPORT: String = "https://buymeacoffee.com/untamedfury"
+const val URL_MOVTERY_SUPPORT: String = "https://afdian.com/a/MovTery"
 const val URL_EASYTIER: String = "https://easytier.cn/"
 
 const val URL_GITHUB_RENDERER_PLUGINS = "https://github.com/ShirosakiMio/FCLRendererPlugin/releases/tag/Renderer"
