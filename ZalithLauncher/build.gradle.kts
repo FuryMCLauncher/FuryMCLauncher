@@ -121,7 +121,7 @@ android {
 
                     (output.getFilter(ABI)?.identifier ?: "all").let { abi ->
                         val baseName = "$launcherName-${if (variant.buildType == "release") defaultConfig.versionName else "Debug-${defaultConfig.versionName}"}"
-                        output.outputFileName = if (abi == "all") "$baseName.apk" else "$baseName-$abi.apk"
+                        output.outputFileName = if (abi == "all") "$baseName-universal.apk" else "$baseName-$abi.apk"
                     }
                 }
             }
