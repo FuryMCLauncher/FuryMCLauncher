@@ -208,7 +208,7 @@ fun AboutInfoScreen(
                             PillButton(
                                 modifier = Modifier.weight(1f),
                                 text = "Website",
-                                onClick = { openLink("https://zalith.movtery.com") },
+                                onClick = { openLink("https://www.zalithlauncher.cn") },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                             PillButton(

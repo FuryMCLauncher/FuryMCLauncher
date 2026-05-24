@@ -430,6 +430,7 @@ fun LoginMenuDialog(
     onDismissRequest: () -> Unit,
     onMicrosoftLogin: () -> Unit,
     onLocalLogin: () -> Unit,
+    onElyByLogin: () -> Unit,
     authServers: List<AuthServer>,
     onAuthServerLogin: (server: AuthServer) -> Unit,
     onAddAuthServer: () -> Unit,
@@ -472,12 +473,32 @@ fun LoginMenuDialog(
                                 .padding(start = 12.dp, end = 6.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            //微软登录
+                            LoginItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = stringResource(R.string.account_type_microsoft),
+                                onClick = {
+                                    onMicrosoftLogin()
+                                    onDismissRequest()
+                                }
+                            )
+
                             //离线登录
                             LoginItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 title = stringResource(R.string.account_type_local),
                                 onClick = {
                                     onLocalLogin()
+                                    onDismissRequest()
+                                }
+                            )
+
+                            //Ely.by 登录
+                            LoginItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = "Ely.by",
+                                onClick = {
+                                    onElyByLogin()
                                     onDismissRequest()
                                 }
                             )

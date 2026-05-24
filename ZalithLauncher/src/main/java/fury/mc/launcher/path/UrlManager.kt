@@ -46,6 +46,7 @@ const val URL_WEBLATE: String = "https://github.com/FuryMCLauncher/FuryMCLaunche
 const val URL_SUPPORT: String = "https://buymeacoffee.com/untamedfury"
 const val URL_MOVTERY_SUPPORT: String = "https://afdian.com/a/MovTery"
 const val URL_EASYTIER: String = "https://easytier.cn/"
+const val URL_ELY_BY_AUTH: String = "https://authserver.ely.by/"
 
 const val URL_GITHUB_RENDERER_PLUGINS = "https://github.com/ShirosakiMio/FCLRendererPlugin/releases/tag/Renderer"
 const val URL_GITHUB_DRIVER_PLUGINS = "https://github.com/FCL-Team/FCLDriverPlugin/releases/tag/Turnip"

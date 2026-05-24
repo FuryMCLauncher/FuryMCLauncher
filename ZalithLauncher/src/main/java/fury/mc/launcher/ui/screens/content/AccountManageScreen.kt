@@ -391,6 +391,19 @@ private fun LoginMenuOperation(
                 onLocalLogin = {
                     actions.onIntent(AccountManageIntent.UpdateLocalLoginOp(LocalLoginOperation.Edit))
                 },
+                onElyByLogin = {
+                    actions.onIntent(
+                        AccountManageIntent.UpdateOtherLoginOp(
+                            OtherLoginOperation.OnLogin(
+                                AuthServer(
+                                    baseUrl = fury.mc.launcher.path.URL_ELY_BY_AUTH,
+                                    serverName = "Ely.by",
+                                    register = "https://ely.by/registration"
+                                )
+                            )
+                        )
+                    )
+                },
                 onAuthServerLogin = { server ->
                     actions.onIntent(
                         AccountManageIntent.UpdateOtherLoginOp(
