@@ -88,6 +88,7 @@ sealed interface LauncherUpgradeOperation {
  */
 private const val LATEST_VERSION = "latest_version_md.json"
 private const val LATEST_API_URL = "$URL_PROJECT_INFO/$LATEST_VERSION"
+private const val LATEST_RAW_URL = "https://raw.githubusercontent.com/FuryMCLauncher/FuryMC-info/main/v2/$LATEST_VERSION"
 private const val LATEST_API_CHINESE_URL = "https://repo.miawa.cn/FuryMC-info/v2/$LATEST_VERSION"
 
 /**
@@ -95,6 +96,7 @@ private const val LATEST_API_CHINESE_URL = "https://repo.miawa.cn/FuryMC-info/v2
  */
 private const val NOTICE_JSON = "launcher_notice.json"
 private const val NOTICE_API_URL = "https://api.github.com/repos/FuryMCLauncher/FuryMC-info/contents/$NOTICE_JSON"
+private const val NOTICE_RAW_URL = "https://raw.githubusercontent.com/FuryMCLauncher/FuryMC-info/main/$NOTICE_JSON"
 private const val NOTICE_API_CHINESE_URL = "https://repo.miawa.cn/FuryMC-info/$NOTICE_JSON"
 
 /**
