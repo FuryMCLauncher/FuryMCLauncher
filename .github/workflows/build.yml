@@ -65,7 +65,7 @@ jobs:
           if [ -z "$VARIANT" ]; then
             VARIANT="Debug"
           fi
-          ./gradlew ZalithLauncher:assemble$VARIANT -Darch=${{ matrix.arch }}
+          ./gradlew clean ZalithLauncher:assemble$VARIANT -Darch=${{ matrix.arch }}
 
       - name: Upload Release APK for ${{ matrix.arch }}
         if: inputs.variant == 'Release' || github.event.inputs.variant == 'Release'
