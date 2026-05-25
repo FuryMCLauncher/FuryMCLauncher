@@ -214,10 +214,28 @@ fun AboutInfoScreen(
                             PillButton(
                                 modifier = Modifier.weight(1f),
                                 text = "Sponsor",
-                                onClick = { openLink(URL_SUPPORT) },
+                                onClick = { openLink(URL_MOVTERY_SUPPORT) },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                         }
+                    }
+                }
+            }
+
+            // CARD 3: Authentication Services (Ely.by)
+            animatedItem(scope) { yOffset ->
+                ChunkLayout(
+                    modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                    title = "Authentication"
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        LinkIconItem(
+                            icon = painterResource(R.drawable.ic_login),
+                            title = "Ely.by",
+                            text = "FuryMC uses ely.by auth system to log into ely.by accounts.",
+                            openLink = { openLink("https://ely.by") },
+                            useImage = false
+                        )
                     }
                 }
             }
