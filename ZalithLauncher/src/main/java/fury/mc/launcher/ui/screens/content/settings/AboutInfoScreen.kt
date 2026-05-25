@@ -52,6 +52,7 @@ import fury.mc.launcher.library.LibraryInfo
 import fury.mc.launcher.library.libraryData
 import fury.mc.launcher.path.URL_COMMUNITY
 import fury.mc.launcher.path.URL_MCMOD
+import fury.mc.launcher.path.URL_MOVTERY_SUPPORT
 import fury.mc.launcher.path.URL_PROJECT
 import fury.mc.launcher.path.URL_SUPPORT
 import fury.mc.launcher.path.URL_WEBLATE
