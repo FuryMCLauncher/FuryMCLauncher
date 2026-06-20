@@ -504,7 +504,7 @@
     <string name="files_select_dir">اختيار مجلد</string>
     <string name="files_current_path">المسار الحالي: %s</string>
     <string name="files_no_selectable_content">لا يوجد محتوى قابل للاختيار</string>
-    <string name="file_invalid_length">الاسم طويل جداً! (الحالي: %d، الحد الأقصى: %d)</string>
+    <string name="file_invalid_length">الاسم طويل جداً! (الحالي: %1$d، الحد الأقصى: %2$d)</string>
     <string name="file_invalid_leading_or_trailing_space">لا يمكن البدء أو الانتهاء بمسافة!</string>
     <string name="multirt_runtime_corrupt">بيئة تشغيل Java تالفة</string>
     <string name="multirt_runtime_incompatible_arch">بنية غير متوافقة: %s</string>

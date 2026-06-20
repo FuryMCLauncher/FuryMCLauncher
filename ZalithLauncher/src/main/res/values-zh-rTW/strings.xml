@@ -546,7 +546,7 @@
     <string name="files_select_dir">選擇此目錄</string>
     <string name="files_current_path">目前路徑：%s</string>
     <string name="files_no_selectable_content">此目錄沒有可選內容</string>
-    <string name="file_invalid_length">名稱過長！(目前長度：%d，最大長度：%d)</string>
+    <string name="file_invalid_length">名稱過長！(目前長度：%1$d，最大長度：%2$d)</string>
     <string name="file_invalid_leading_or_trailing_space">不能以空格開頭或結尾！</string>
     <!--  Jre  -->
     <string name="multirt_runtime_corrupt">Java 執行環境損毀</string>

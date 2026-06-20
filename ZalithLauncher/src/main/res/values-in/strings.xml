@@ -379,7 +379,7 @@
     <string name="files_select_dir">Pilih Folder</string>
     <string name="files_current_path">Jalur saat ini: %s</string>
     <string name="files_no_selectable_content">Tidak ada konten untuk dipilih</string>
-    <string name="file_invalid_length">Nama terlalu panjang! (Saat ini: %d, Maks: %d)</string>
+    <string name="file_invalid_length">Nama terlalu panjang! (Saat ini: %1$d, Maks: %2$d)</string>
     <string name="multirt_runtime_corrupt">Java runtime rusak</string>
     <string name="multirt_runtime_incompatible_arch">Arsitektur tidak kompatibel: %s</string>
     <string name="multirt_runtime_delete_message">Kamu yakin ingin menghapus Java runtime %s? Tindakan ini tidak bisa dibatalkan!</string>

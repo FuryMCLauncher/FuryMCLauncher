@@ -221,7 +221,7 @@
     <string name="files_select_dir">Выбрать папку</string>
     <string name="files_current_path">Текущий путь: %s</string>
     <string name="files_no_selectable_content">Нет доступного содержимого для выбора</string>
-    <string name="file_invalid_length">Имя слишком длинное! (Текущее: %d, Максимум: %d)</string>
+    <string name="file_invalid_length">Имя слишком длинное! (Текущее: %1$d, Максимум: %2$d)</string>
     <!-- Java Runtime -->
     <string name="multirt_runtime_corrupt">Среда Java повреждена</string>
     <string name="multirt_runtime_incompatible_arch">Несовместимая архитектура: %s</string>

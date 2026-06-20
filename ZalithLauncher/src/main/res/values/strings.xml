@@ -601,7 +601,7 @@
     <string name="files_select_dir">Select Folder</string>
     <string name="files_current_path">Current path: %s</string>
     <string name="files_no_selectable_content">No selectable content</string>
-    <string name="file_invalid_length">Name too long! (Current: %d, Max: %d)</string>
+    <string name="file_invalid_length">Name too long! (Current: %1$d, Max: %2$d)</string>
     <string name="file_invalid_leading_or_trailing_space">Cannot start or end with a space!</string>
     <!-- Java Runtime -->
     <string name="multirt_runtime_corrupt">Corrupted Java runtime</string>

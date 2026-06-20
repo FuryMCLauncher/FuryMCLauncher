@@ -388,7 +388,7 @@
     <string name="files_select_dir">Klasör Seç</string>
     <string name="files_current_path">Geçerli yol: %s</string>
     <string name="files_no_selectable_content">Seçilebilecek içerik yok</string>
-    <string name="file_invalid_length">Ad çok uzun! (Şu an: %d, Maks: %d)</string>
+    <string name="file_invalid_length">Ad çok uzun! (Şu an: %1$d, Maks: %2$d)</string>
     <string name="multirt_runtime_corrupt">Bozuk Java çalışma zamanı</string>
     <string name="multirt_runtime_incompatible_arch">Uyumsuz mimari: %s</string>
     <string name="multirt_runtime_delete_message">Java çalışma ortamı %s\'yi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!</string>

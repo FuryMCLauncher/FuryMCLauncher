@@ -679,7 +679,7 @@
     <string name="cape_name_cherry_blossom">Cherry Blossomマント</string>
     <string name="files_current_path">現在のパス: %s</string>
     <string name="files_no_selectable_content">選択可能なコンテンツがありません</string>
-    <string name="file_invalid_length">名前が長いです！ (現在: %d, 最長: %d)</string>
+    <string name="file_invalid_length">名前が長いです！ (現在: %1$d, 最長: %2$d)</string>
     <string name="multirt_runtime_delete_message">Javaランタイム %s を削除しますか？これは元に戻せません！</string>
     <string name="multirt_runtime_import_failed_file_name">無効なファイル名</string>
     <string name="multirt_runtime_import_failed_input_stream">ファイルの読み取りに失敗しました</string>

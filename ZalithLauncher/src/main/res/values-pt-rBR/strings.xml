@@ -533,7 +533,7 @@
     <string name="files_select_dir">Selecionar Pasta</string>
     <string name="files_current_path">Caminho atual: %s</string>
     <string name="files_no_selectable_content">Nenhum conteúdo selecionável</string>
-    <string name="file_invalid_length">Nome muito longo! (Atual: %d, Máximo: %d)</string>
+    <string name="file_invalid_length">Nome muito longo! (Atual: %1$d, Máximo: %2$d)</string>
     <string name="file_invalid_leading_or_trailing_space">Não é possível começar ou terminar com um espaço!</string>
     <string name="multirt_runtime_corrupt">Java runtime Corrompido</string>
     <string name="multirt_runtime_incompatible_arch">Arquitetura incompatível: %s</string>

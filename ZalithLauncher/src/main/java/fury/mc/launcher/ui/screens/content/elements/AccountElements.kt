@@ -582,6 +582,7 @@ private fun PreviewLoginMenuDialog() {
             onDismissRequest = {},
             onMicrosoftLogin = {},
             onLocalLogin = {},
+            onElyByLogin = {},
             authServers = emptyList(),
             onAuthServerLogin = {},
             onAddAuthServer = {},

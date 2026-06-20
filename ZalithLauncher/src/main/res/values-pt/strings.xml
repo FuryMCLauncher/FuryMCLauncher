@@ -406,7 +406,7 @@
     <string name="account_other_login_role_not_found">Nenhum cargo correspondente à conta atual foi encontrado. Por favor, verifique no servidor que você está usando se este cargo existe!</string>
     <string name="files_current_path">Caminho atual: %s</string>
     <string name="files_no_selectable_content">Sem conteúdo selecionável</string>
-    <string name="file_invalid_length">Nome muito longo! (Atual: %d, Máximo: %d)</string>
+    <string name="file_invalid_length">Nome muito longo! (Atual: %1$d, Máximo: %2$d)</string>
     <string name="multirt_runtime_corrupt">Java Runtime corrompido</string>
     <string name="multirt_runtime_incompatible_arch">Arquitetura incompatível: %s</string>
     <string name="multirt_runtime_delete_message">Apagar Java Runtime %s? Essa ação não pode ser desfeita!</string>
