@@ -40,7 +40,7 @@ static void vulkan_log(JNIEnv *env, const char *level, const char *fmt, ...) {
 #define LOG_E(...) vulkan_log(env, "ERROR", __VA_ARGS__)
 
 JNIEXPORT void JNICALL
-Java_com_movtery_zalithlauncher_utils_device_VulkanChecker_nativeSetLogCallback(
+Java_fury_mc_launcher_utils_device_VulkanChecker_nativeSetLogCallback(
         JNIEnv *env,
         jclass clazz,
         jobject callback
@@ -66,7 +66,7 @@ Java_com_movtery_zalithlauncher_utils_device_VulkanChecker_nativeSetLogCallback(
 void *loadTurnipVulkan(const char *driver_path, const char *native_dir, const char *cache_dir);
 
 JNIEXPORT jobject JNICALL
-Java_com_movtery_zalithlauncher_utils_device_VulkanChecker_nativeCheckVulkan(
+Java_fury_mc_launcher_utils_device_VulkanChecker_nativeCheckVulkan(
         JNIEnv *env,
         jclass clazz,
         jstring jDriverPath,
@@ -359,7 +359,7 @@ Java_com_movtery_zalithlauncher_utils_device_VulkanChecker_nativeCheckVulkan(
     PUT_FEAT("vertexAttributeInstanceRateDivisor", vertexAttributeInstanceRateDivisor);
 #undef PUT_FEAT
 
-    jclass capClass = (*env)->FindClass(env, "com/movtery/zalithlauncher/utils/device/VulkanCapabilities");
+    jclass capClass = (*env)->FindClass(env, "fury/mc/launcher/utils/device/VulkanCapabilities");
     jmethodID capInit = (*env)->GetMethodID(env, capClass, "<init>", "(IIILjava/util/List;Ljava/util/Map;)V");
 
     jint major = (jint) VK_API_VERSION_MAJOR(deviceApiVersion);

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.movtery.colorpicker"
+    namespace = "fury.mc.colorpicker"
     compileSdk = 37
 
     defaultConfig {
